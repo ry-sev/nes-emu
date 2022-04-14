@@ -17,6 +17,8 @@ void Bus::load_program_from_string(const char* program)
         stream >> b;
         ram[offset++] = (u8)std::stoul(b, nullptr, 16);
     }
+    write(0xFFFC, 0x00);
+    write(0xFFFD, 0x80);
 }
 
 u8 Bus::read(u16 address)
