@@ -3,3 +3,6 @@
 
 # build results
 build/
+
+# imgui
+imgui.ini
