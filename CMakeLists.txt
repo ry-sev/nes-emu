@@ -55,6 +55,7 @@ set(SOURCE
     ${SRC_DIR}/GUI/RamWidget.cpp
     ${SRC_DIR}/GUI/StatusWidget.cpp
     ${SRC_DIR}/GUI/MenuWidget.cpp
+    ${SRC_DIR}/GUI/InstructionWidget.cpp
     ${SRC_DIR}/main.cpp
 )
 
