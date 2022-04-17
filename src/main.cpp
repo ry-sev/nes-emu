@@ -24,19 +24,19 @@ int main()
 
     cpu.print_registers();
 
-    auto wm = WindowManager();
-    wm.init();
+    auto wm = new WindowManager();
+    wm->init();
 
     auto menu_widget = new MenuWidget();
-    wm.add_widget(menu_widget);
+    wm->add_widget(menu_widget);
 
     auto ram_widget = new RamWidget(&bus);
-    wm.add_widget(ram_widget);
+    wm->add_widget(ram_widget);
 
     auto status_widget = new StatusWidget(&cpu);
-    wm.add_widget(status_widget);
+    wm->add_widget(status_widget);
 
-    wm.run();
+    wm->run();
     
     return 0;
 }
