@@ -54,7 +54,6 @@ public:
     Registers& registers() { return m_registers; }
     void connect_to_bus(Bus* bus) { m_bus = bus; };
     std::vector<Instruction> lookup_table() { return m_lookup_table; }
-    void print_registers();
     void reset();
 
     u8 get_flag(Flags flag);

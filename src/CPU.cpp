@@ -1274,26 +1274,3 @@ void  CPU6502::clock()
     (this->*m_lookup_table[opcode].mode)();
     (this->*m_lookup_table[opcode].instruction)();
 }
-
-void CPU6502::print_registers()
-{
-    dbgln("---------------------------------------------------");
-
-    printf("$A:\t0x%x\n",  static_cast<unsigned>(m_registers.a));
-    printf("$X:\t0x%x\n",  static_cast<unsigned>(m_registers.x));
-    printf("$Y:\t0x%x\n",  static_cast<unsigned>(m_registers.y));
-    printf("\n");
-    printf("$Program Counter: 0x%x\n",  static_cast<unsigned>(m_registers.pc));
-    printf("$Stack Pointer:\t  0x%x\n",  static_cast<unsigned>(m_registers.s));
-    printf("$Status:\t  0x%x\n",  static_cast<unsigned>(m_registers.p));
-
-    printf("\nC=%x", static_cast<unsigned>(get_flag(C)));
-    printf(" Z=%x", static_cast<unsigned>(get_flag(Z)));
-    printf(" I=%x", static_cast<unsigned>(get_flag(I)));
-    printf(" D=%x", static_cast<unsigned>(get_flag(D)));
-    printf(" B=%x", static_cast<unsigned>(get_flag(B)));
-    printf(" O=%x", static_cast<unsigned>(get_flag(V)));
-    printf(" N=%x\n", static_cast<unsigned>(get_flag(N)));
-
-    dbgln("---------------------------------------------------");
-}
