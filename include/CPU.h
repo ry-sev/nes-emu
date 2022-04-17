@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 enum AddressingModes {
     Absolute,
@@ -43,9 +44,16 @@ class CPU6502 {
 public:
     CPU6502();
     ~CPU6502() = default;
+
+    struct Instruction {
+        std::string name;
+        void (CPU6502::*mode)(void) = nullptr;
+        void (CPU6502::*instruction)(void) = nullptr;
+    };
     
     Registers& registers() { return m_registers; }
     void connect_to_bus(Bus* bus) { m_bus = bus; };
+    std::vector<Instruction> lookup_table() { return m_lookup_table; }
     void print_registers();
     void reset();
 
@@ -63,6 +71,7 @@ private:
     Bus* m_bus;
     Registers m_registers;
     AddressingModes m_addressing_mode;
+    std::vector<Instruction> m_lookup_table;
 
     u16 m_current_address;
     u16 m_offset;
@@ -142,4 +151,5 @@ private:
     void TXA();
     void TXS();
     void TYA();
+    void XXX();
 };
