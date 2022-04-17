@@ -17,14 +17,6 @@ int main()
 
     cpu.reset();
 
-    while (!(cpu.registers().a == 0x1e))
-        cpu.clock();
-
-    dbgln("3 X 10 = ", static_cast<unsigned>(cpu.registers().a));
-    dbgln("Total CPU cycles: ", static_cast<unsigned>(cpu.cycles()));
-
-    cpu.print_registers();
-
     auto wm = new WindowManager();
     wm->init();
 
