@@ -15,5 +15,20 @@ void InstructionWidget::render()
         return;
     }
 
+    if (ImGui::Button("Run")) {
+        while (!(m_cpu->registers().a == 0x1e))
+            m_cpu->clock();
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Step"))
+        m_cpu->clock();
+    
+    ImGui::SameLine();
+    
+    if (ImGui::Button("Reset"))
+        m_cpu->reset();
+
     end();
 }
