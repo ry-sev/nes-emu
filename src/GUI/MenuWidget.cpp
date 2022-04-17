@@ -7,8 +7,7 @@ MenuWidget::MenuWidget()
 
 void MenuWidget::render()
 {
-    if (ImGui::BeginMainMenuBar())
-    {
+    if (ImGui::BeginMainMenuBar()) {
         ImGui::Button("Reset");
         ImGui::EndMainMenuBar();
     }
