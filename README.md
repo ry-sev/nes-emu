@@ -4,9 +4,13 @@
 
 This is an ongoing project where I attempt to emulate a Nintendo Entertainment System (NES). This idea is not new but I figured it would be really fun develop, slowly but surely.
 
+## Screenshot
+
+![Emulator](screenshot.png)
+
 ## Supported Platforms
 
-This is actively being developed on Ubuntu 20.04
+This is actively being developed on Ubuntu 20.04 but can more than likely be built on other platforms.
 
 ## Prerequisites
 
