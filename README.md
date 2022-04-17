@@ -15,7 +15,7 @@ In order to build, the following dependencies must be installed:
 #### Debian/Ubuntu
 
 ```console
-sudo apt install build-essential cmake ninja-build
+sudo apt install build-essential cmake ninja-build libglfw3 libglfw3-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev libglew-dev
 ```
 
 #### GCC 11
