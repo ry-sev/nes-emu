@@ -1,6 +1,9 @@
 #include "Bus.h"
 #include "CPU.h"
-#include <sstream>
+#include "WindowManager.h"
+#include "MenuWidget.h"
+#include "RamWidget.h"
+#include "StatusWidget.h"
 
 int main() 
 {
@@ -13,12 +16,27 @@ int main()
 
     cpu.reset();
 
-    while (!(cpu.registers().a == 0x1e)) {
+    while (!(cpu.registers().a == 0x1e))
         cpu.clock();
-    }
 
-    dbgln("3 X 10 = ", unsigned(cpu.registers().a));
-    dbgln("Total CPU cycles: ", unsigned(cpu.cycles()));
+    dbgln("3 X 10 = ", static_cast<unsigned>(cpu.registers().a));
+    dbgln("Total CPU cycles: ", static_cast<unsigned>(cpu.cycles()));
+
+    cpu.print_registers();
+
+    auto wm = WindowManager();
+    wm.init();
+
+    auto menu_widget = new MenuWidget();
+    wm.add_widget(menu_widget);
+
+    auto ram_widget = new RamWidget(&bus);
+    wm.add_widget(ram_widget);
+
+    auto status_widget = new StatusWidget(&cpu);
+    wm.add_widget(status_widget);
+
+    wm.run();
     
     return 0;
 }
