@@ -1173,9 +1173,10 @@ void CPU6502::print_registers()
     printf("$A:\t0x%x\n",  static_cast<unsigned>(m_registers.a));
     printf("$X:\t0x%x\n",  static_cast<unsigned>(m_registers.x));
     printf("$Y:\t0x%x\n",  static_cast<unsigned>(m_registers.y));
-    printf("$SP:\t0x%x\n",  static_cast<unsigned>(m_registers.pc));
-    printf("$S:\t0x%x\n",  static_cast<unsigned>(m_registers.s));
-    printf("$P:\t0x%x\n",  static_cast<unsigned>(m_registers.p));
+    printf("\n");
+    printf("$Program Counter: 0x%x\n",  static_cast<unsigned>(m_registers.pc));
+    printf("$Stack Pointer:\t  0x%x\n",  static_cast<unsigned>(m_registers.s));
+    printf("$Status:\t  0x%x\n",  static_cast<unsigned>(m_registers.p));
 
     printf("\nC=%x", static_cast<unsigned>(get_flag(C)));
     printf(" Z=%x", static_cast<unsigned>(get_flag(Z)));

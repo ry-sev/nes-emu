@@ -49,6 +49,8 @@ public:
     void print_registers();
     void reset();
 
+    u8 get_flag(Flags flag);
+
     u8 read(u16 address);
     void write(u16 address, u8 value);
 
@@ -68,7 +70,6 @@ private:
     u8 m_cycles;
     bool m_page_boundary_crossed;
 
-    u8 get_flag(Flags flag);
     void set_flag(Flags flag, bool value);
 
     void AM_ABS();
