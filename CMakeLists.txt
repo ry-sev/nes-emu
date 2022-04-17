@@ -39,10 +39,6 @@ link_libraries(${GLFW_LIBRARY_DIRS})
 find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIRS})
 
-# glew
-find_package(GLEW REQUIRED)
-include_directories(${GLEW_INCLUDE_DIRS})
-
 include_directories(${IMGUI_DIR})
 include_directories(include)
 include_directories(src)
@@ -62,7 +58,7 @@ set(SOURCE
 add_executable(${PROJECT_NAME} ${SOURCE})
 
 target_link_libraries(${PROJECT_NAME} imgui)
-target_link_libraries(${PROJECT_NAME} glfw ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${CMAKE_DL_LIBS})
+target_link_libraries(${PROJECT_NAME} glfw ${OPENGL_LIBRARIES} ${CMAKE_DL_LIBS})
 
 target_precompile_headers(nes-emu PRIVATE include/util.h)
 target_precompile_headers(nes-emu PRIVATE include/types.h)
