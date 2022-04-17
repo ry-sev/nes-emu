@@ -4,6 +4,7 @@
 #include "MenuWidget.h"
 #include "RamWidget.h"
 #include "StatusWidget.h"
+#include "InstructionWidget.h"
 
 int main() 
 {
@@ -35,6 +36,9 @@ int main()
 
     auto status_widget = new StatusWidget(&cpu);
     wm->add_widget(status_widget);
+
+    auto inst_widget = new InstructionWidget(&cpu);
+    wm->add_widget(inst_widget);
 
     wm->run();
     
