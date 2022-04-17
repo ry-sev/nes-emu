@@ -16,7 +16,12 @@ This is actively being developed on Ubuntu 20.04 but can more than likely be bui
 
 In order to build, the following dependencies must be installed:
 
-#### Debian/Ubuntu
+- [CMake](https://cmake.org/)
+- [Ninja](https://ninja-build.org/)
+- [OpenGL](https://www.opengl.org/)
+- [GLFW](https://www.glfw.org/)
+
+### Debian/Ubuntu
 
 ```console
 sudo apt install build-essential cmake ninja-build libglfw3 libglfw3-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev
