@@ -13,4 +13,5 @@ public:
 
 private:
     CPU6502* m_cpu;
+    ImGuiTableFlags m_flags;
 };
