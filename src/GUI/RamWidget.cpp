@@ -22,7 +22,7 @@ void RamWidget::render()
         ImGuiTableFlags_Borders |
         ImGuiTableFlags_RowBg |
         ImGuiTableFlags_SizingFixedFit |
-        ImGuiTableFlags_NoHostExtendX;
+        ImGuiTableFlags_SizingStretchProp;
 
     create_table("ram_table_1", 0x0000, 4);
     create_table("ram_table_2", 0x8000, 16);
