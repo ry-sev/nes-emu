@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <map>
 
 enum AddressingModes {
     Absolute,
@@ -37,6 +38,12 @@ typedef struct Registers {
     u8 p   = 0x00;  // status register
 } Registers;
 
+struct InstructionStrings {
+    std::string address;
+    std::string instruction;
+    std::string mode;
+};
+
 class Bus;
 
 class CPU6502 {
@@ -62,6 +69,7 @@ public:
     void write(u16 address, u8 value);
 
     void clock();
+    std::map<u16, InstructionStrings> disassemble(u16 start_address, u16 end_address);
     u8 cycles() { return m_cycles; }
     bool finished() { return m_cycles == 0; }
 

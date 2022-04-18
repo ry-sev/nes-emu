@@ -1268,9 +1268,107 @@ void CPU6502::write(u16 address, u8 value)
     m_bus->write(address, value);
 }
 
-void  CPU6502::clock()
+void CPU6502::clock()
 {
     auto opcode = read(m_registers.pc++);
     (this->*m_lookup_table[opcode].mode)();
     (this->*m_lookup_table[opcode].instruction)();
+}
+
+std::map<u16, InstructionStrings> CPU6502::disassemble(u16 start_address, u16 end_address)
+{
+    std::map<u16, InstructionStrings> instruction_map;
+
+    u16 current_address = start_address;
+    
+    u8 value = 0x00;
+    u8 low_byte = 0x00;
+    u8 high_byte = 0x00;
+
+    std::string address;
+    std::string instruction;
+    std::string mode_str;
+
+    while (current_address < end_address) {
+
+        u16 id = current_address;
+        address = hex(current_address, 4);
+        u8 opcode = read(current_address++);
+
+        // TODO: append opcodes not just instruction name
+
+        instruction = m_lookup_table[opcode].name + " ";
+
+        auto mode = m_lookup_table[opcode].mode;
+
+        if (mode == &CPU6502::AM_ABS) {
+            low_byte = read(current_address++);
+            high_byte = read(current_address++);
+            instruction += "$" + hex((high_byte << 8) | low_byte, 4);
+            mode_str = "ABS";
+        }
+        else if (mode == &CPU6502::AM_ABX) {
+            low_byte = read(current_address++);
+            high_byte = read(current_address++);
+            instruction += "$" + hex((high_byte << 8) | low_byte, 4) + ", X";
+            mode_str = "ABX";
+        }
+        else if (mode == &CPU6502::AM_ABY) {
+            low_byte = read(current_address++);
+            high_byte = read(current_address++);
+            instruction += "$" + hex((high_byte << 8) | low_byte, 4) + ", X";
+            mode_str = "ABY";
+        }
+        else if (mode == &CPU6502::AM_IMM) {
+            value = read(current_address++);
+            instruction += "#$" + hex(value, 2);
+            mode_str = "IMM";
+        }
+        else if (mode ==  &CPU6502::AM_IMP) {
+            mode_str = "IMP";
+        }
+        else if (mode == &CPU6502::AM_IND) {
+            low_byte = read(current_address++);
+            high_byte = read(current_address++);
+            instruction += "($" + hex((high_byte << 8) | low_byte, 4) + ")";
+            mode_str = "IND";
+        }
+        else if (mode == &CPU6502::AM_INX) {
+            low_byte = read(current_address++);
+            high_byte = 0x00;
+            instruction += "($" + hex(low_byte, 2) + ", X)";
+            mode_str = "INX";
+        }
+        else if (mode == &CPU6502::AM_INY) {
+            low_byte = read(current_address++);
+            high_byte = 0x00;
+            instruction += "($" + hex(low_byte, 2) + ", Y)";
+            mode_str= "mode";
+        }
+        else if (mode == &CPU6502::AM_REL) {
+            value = read(current_address++);
+            instruction += "$" + hex(value, 2) + " [$" + hex(current_address + (int8_t)value, 4) + "]";
+            mode_str = "REL";
+        }
+        else if (mode ==  &CPU6502::AM_ZER) {
+            low_byte = read(current_address++);
+            high_byte = 0x00;
+            instruction += "$" + hex(low_byte, 2);
+            mode_str = "ZER";
+        }
+        else if (mode ==  &CPU6502::AM_ZEX) {
+            low_byte = read(current_address++);
+            high_byte = 0x00;
+            instruction += "$" + hex(low_byte, 2) + ", X";
+            mode_str = "ZEX";
+        }
+        else if (mode ==  &CPU6502::AM_ZEY) {
+            low_byte = read(current_address++);
+            high_byte = 0x00;
+            instruction += "$" + hex(low_byte, 2) + ", Y";
+            mode_str = "ZEY";
+        }
+        instruction_map[id] = {address, instruction, mode_str};
+    }
+    return instruction_map;
 }
