@@ -36,7 +36,7 @@ void InstructionWidget::render()
         ImGuiTableFlags_Borders |
         ImGuiTableFlags_RowBg |
         ImGuiTableFlags_SizingFixedFit |
-        ImGuiTableFlags_NoHostExtendX | 
+        ImGuiTableFlags_SizingStretchProp | 
         ImGuiTableFlags_ScrollY;
 
     // TODO: Highlight rows on hover
@@ -48,14 +48,18 @@ void InstructionWidget::render()
         ImGui::TableSetupColumn("Mode");
         ImGui::TableHeadersRow();
 
-        for (auto const& [key, value] : m_cpu->disassemble(0x7FFA, 0xAAAA)) {
+        auto pc = m_cpu->registers().pc;
+        bool on_pc;
+
+        for (auto const& [key, value] : m_cpu->disassemble(pc - 26, pc + 30)) {
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0);
-            ImGui::Text("%s", value.address.c_str());
+            on_pc = hex(pc, 4) == value.address;
+            ImGui::Selectable(value.address.c_str(), on_pc, ImGuiSelectableFlags_SpanAllColumns);
             ImGui::TableSetColumnIndex(1);
-            ImGui::Text("%s", value.instruction.c_str());
+            ImGui::TextUnformatted(value.instruction.c_str());
             ImGui::TableSetColumnIndex(2);
-            ImGui::Text("%s", value.mode.c_str());
+            ImGui::TextUnformatted(value.mode.c_str());
         }
 
         ImGui::EndTable();
