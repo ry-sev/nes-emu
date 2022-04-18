@@ -32,8 +32,11 @@ void RamWidget::render()
 
 void RamWidget::create_table(const char* table_name, u16 address, u32 rows)
 {
+    // TODO: Highlight rows on hover
+    
     if (ImGui::BeginTable(table_name, 3, m_flags)) {
 
+        ImGui::TableSetupScrollFreeze(1, 1);
         ImGui::TableSetupColumn("Address");
         ImGui::TableSetupColumn("Hex");
         ImGui::TableSetupColumn("ASCII");
