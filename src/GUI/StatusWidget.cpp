@@ -57,6 +57,10 @@ void StatusWidget::render()
     ImGui::Text("Program Counter: 0x%02X", pc);
     ImGui::Text("Stack Pointer:   0x%02X", s);
 
+    ImGui::Dummy(ImVec2(0.0f, 1.0f));
+
+    ImGui::Text("Cycles: %d", m_cpu->cycles());
+
     end();
 }
 
