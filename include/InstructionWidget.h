@@ -14,4 +14,5 @@ public:
 private:
     CPU6502* m_cpu;
     ImGuiTableFlags m_flags;
+    std::map<u16, InstructionStrings> m_disassembly;
 };
