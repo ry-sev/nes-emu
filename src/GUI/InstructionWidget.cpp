@@ -49,20 +49,48 @@ void InstructionWidget::render()
 
         auto pc = m_cpu->registers().pc;
         bool on_pc;
-
         auto it = m_disassembly.find(pc);
+        auto prev = std::prev(it);
 
+        std::map<u16, InstructionStrings> first_13;
+
+        // FIXME: There has to be a more efficient way to list 26 instructions
+        // with the program counter in the middle
+
+        if (prev != m_disassembly.end()) {
+            for (size_t row = 0; row < 12; row++) {
+                if (prev != m_disassembly.end()) {
+                    first_13[prev->first] = prev->second;
+                    prev = std::prev(prev);
+                }
+            }
+        }
+
+        for (auto it = first_13.begin(); it != first_13.end(); it++ ) {
+            ImGui::TableNextRow(0, 15.0f);
+            ImGui::TableSetColumnIndex(0);
+            on_pc = hex(pc, 4) == it->second.address.c_str();
+            ImGui::Selectable(it->second.address.c_str(), on_pc, ImGuiSelectableFlags_SpanAllColumns);
+            ImGui::TableSetColumnIndex(1);
+            ImGui::TextUnformatted(it->second.instruction.c_str());
+            ImGui::TableSetColumnIndex(2);
+            ImGui::TextUnformatted(it->second.mode.c_str());
+        }
+
+        size_t limit = 26 - first_13.size();
+
+        it = m_disassembly.find(pc);
         if (it != m_disassembly.end()) {
-            for (size_t row = 0; row < 26; row++, it++) {
+            for (size_t row = 0; row < limit; row++, it++) {
                 if (it != m_disassembly.end()) {
                     ImGui::TableNextRow(0, 15.0f);
                     ImGui::TableSetColumnIndex(0);
-                    on_pc = hex(pc, 4) == (*it).second.address.c_str();
-                    ImGui::Selectable((*it).second.address.c_str(), on_pc, ImGuiSelectableFlags_SpanAllColumns);
+                    on_pc = hex(pc, 4) == it->second.address.c_str();
+                    ImGui::Selectable(it->second.address.c_str(), on_pc, ImGuiSelectableFlags_SpanAllColumns);
                     ImGui::TableSetColumnIndex(1);
-                    ImGui::TextUnformatted((*it).second.instruction.c_str());
+                    ImGui::TextUnformatted(it->second.instruction.c_str());
                     ImGui::TableSetColumnIndex(2);
-                    ImGui::TextUnformatted((*it).second.mode.c_str());
+                    ImGui::TextUnformatted(it->second.mode.c_str());
                 }
             }
         }
