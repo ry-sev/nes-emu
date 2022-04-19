@@ -61,17 +61,14 @@ public:
     Registers& registers() { return m_registers; }
     void connect_to_bus(Bus* bus) { m_bus = bus; };
     std::vector<Instruction> lookup_table() { return m_lookup_table; }
-    void reset();
-
-    u8 get_flag(Flags flag);
-
-    u8 read(u16 address);
-    void write(u16 address, u8 value);
-
-    void clock();
     std::map<u16, InstructionStrings> disassemble(u16 start_address, u16 end_address);
     u8 cycles() { return m_cycles; }
-    bool finished() { return m_cycles == 0; }
+    
+    void reset();
+    u8 get_flag(Flags flag);
+    u8 read(u16 address);
+    void write(u16 address, u8 value);
+    void clock();
 
 private:
 
@@ -159,4 +156,7 @@ private:
     void TXS();
     void TYA();
     void XXX();
+
+    void IRQ();
+    void NMI();
 };
