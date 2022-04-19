@@ -5,7 +5,7 @@
 CPU6502::CPU6502()
 {
     m_lookup_table = {
-        {"BRK", &CPU6502::AM_IMM, &CPU6502::BRK},
+        {"BRK", &CPU6502::AM_IMP, &CPU6502::BRK},
         {"ORA", &CPU6502::AM_INX, &CPU6502::ORA},
         {"???", &CPU6502::AM_IMP, &CPU6502::XXX},
         {"???", &CPU6502::AM_IMP, &CPU6502::XXX},
@@ -616,8 +616,9 @@ void CPU6502::BRK()
 
     set_flag(B, 1);
 
-    write(0x0100 + m_registers.s, m_registers.s);
+    write(0x0100 + m_registers.s, m_registers.p);
     m_registers.s--;
+    set_flag(B, 0);
 
     m_registers.pc = read(0xFFFE) | (read(0xFFFF) << 8);
 
@@ -1256,6 +1257,50 @@ void CPU6502::TYA()
 void CPU6502::XXX()
 {
     return;
+}
+
+void CPU6502::IRQ()
+{
+    if (get_flag(I) == 0) {
+        write(0x0100 + m_registers.s, (m_registers.pc >> 8) & 0x00FF);
+        m_registers.s--;
+        write(0x0100 + m_registers.s, m_registers.pc & 0x00FF);
+        m_registers.s--;
+
+        set_flag(B, 0);
+        set_flag(U, 1);
+        set_flag(I, 1);
+        write(0x0100 + m_registers.s, m_registers.p);
+        m_registers.s--;
+
+        m_current_address = 0xFFFE;
+        auto low_byte = read(m_current_address + 0);
+        auto high_byte = read(m_current_address + 1);
+        m_registers.pc = (high_byte << 8) | low_byte;
+
+        m_cycles = 7;
+    }
+}
+
+void CPU6502::NMI()
+{
+        write(0x0100 + m_registers.s, (m_registers.pc >> 8) & 0x00FF);
+        m_registers.s--;
+        write(0x0100 + m_registers.s, m_registers.pc & 0x00FF);
+        m_registers.s--;
+
+        set_flag(B, 0);
+        set_flag(U, 1);
+        set_flag(I, 1);
+        write(0x0100 + m_registers.s, m_registers.p);
+        m_registers.s--;
+
+        m_current_address = 0xFFFA;
+        auto low_byte = read(m_current_address + 0);
+        auto high_byte = read(m_current_address + 1);
+        m_registers.pc = (high_byte << 8) | low_byte;
+
+        m_cycles = 7;
 }
 
 u8 CPU6502::read(u16 address)
