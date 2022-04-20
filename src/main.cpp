@@ -1,10 +1,6 @@
 #include "Bus.h"
 #include "CPU.h"
 #include "WindowManager.h"
-#include "MenuWidget.h"
-#include "RamWidget.h"
-#include "StatusWidget.h"
-#include "InstructionWidget.h"
 
 int main() 
 {
