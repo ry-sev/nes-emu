@@ -29,14 +29,14 @@ enum Flags {
     N = (1 << 7), // Negative
 };
 
-typedef struct Registers {
+struct Registers {
     u8 a   = 0x00;  // accumulator
     u8 x   = 0x00;  // index register
     u8 y   = 0x00;  // index register
     u16 pc = 0x00;  // program counter
     u8 s   = 0x00;  // stack pointer
     u8 p   = 0x00;  // status register
-} Registers;
+};
 
 struct InstructionStrings {
     std::string address;
@@ -58,11 +58,10 @@ public:
         void (CPU6502::*instruction)(void) = nullptr;
     };
     
-    Registers& registers() { return m_registers; }
+    const Registers& registers() { return m_registers; }
     void connect_to_bus(Bus* bus) { m_bus = bus; };
-    std::vector<Instruction> lookup_table() { return m_lookup_table; }
     std::map<u16, InstructionStrings> disassemble(u16 start_address, u16 end_address);
-    u8 cycles() { return m_cycles; }
+    u8 cycles() const { return m_cycles; }
     
     void reset();
     u8 get_flag(Flags flag);
