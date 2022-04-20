@@ -10,6 +10,7 @@ int main()
 {
     auto bus = Bus();
     auto cpu = CPU6502();
+
     bus.connect_to_cpu(&cpu);
     cpu.connect_to_bus(&bus);
 
@@ -17,22 +18,9 @@ int main()
 
     cpu.reset();
 
-    auto wm = new WindowManager();
-    wm->init();
-
-    auto menu_widget = new MenuWidget();
-    wm->add_widget(menu_widget);
-
-    auto ram_widget = new RamWidget(&bus);
-    wm->add_widget(ram_widget);
-
-    auto status_widget = new StatusWidget(&cpu);
-    wm->add_widget(status_widget);
-
-    auto inst_widget = new InstructionWidget(&cpu);
-    wm->add_widget(inst_widget);
-
-    wm->run();
+    auto wm = WindowManager(&bus, &cpu);
+    wm.init();
+    wm.run();
     
     return 0;
 }

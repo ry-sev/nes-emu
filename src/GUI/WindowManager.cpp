@@ -1,4 +1,8 @@
 #include "WindowManager.h"
+#include "MenuWidget.h"
+#include "RamWidget.h"
+#include "StatusWidget.h"
+#include "InstructionWidget.h"
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -14,9 +18,10 @@ static void glfw_error_callback(int error, const char* description)
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
-WindowManager::WindowManager()
+WindowManager::WindowManager(Bus* bus, CPU6502* cpu)
 {
-    
+    m_bus = bus;
+    m_cpu = cpu;
 }
 
 WindowManager::~WindowManager()
@@ -63,6 +68,11 @@ void WindowManager::init()
     // setup platform/renderer backends
     ImGui_ImplGlfw_InitForOpenGL(m_window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
+
+    add_widget(new MenuWidget());
+    add_widget(new RamWidget(m_bus));
+    add_widget(new StatusWidget(m_cpu));
+    add_widget(new InstructionWidget(m_cpu));
 }
 
 void WindowManager::run()
