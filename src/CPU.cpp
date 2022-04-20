@@ -811,7 +811,7 @@ void CPU6502::EOR()
 void CPU6502::INC()
 {
     m_current_value = read(m_current_address);
-    auto value = m_current_address + 0x01;
+    auto value = m_current_value + 0x01;
 
     write(m_current_address, value & 0x00FF);
 
