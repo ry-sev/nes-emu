@@ -1,7 +1,5 @@
 #pragma once
 
-#include "CPU.h"
-
 #define RAM_SIZE 0xFFFF
 
 class CPU6502;

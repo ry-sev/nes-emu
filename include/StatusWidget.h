@@ -1,6 +1,5 @@
 #pragma once
 #include "Widget.h"
-#include "CPU.h"
 
 class CPU6502;
 

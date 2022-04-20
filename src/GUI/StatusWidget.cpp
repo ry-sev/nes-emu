@@ -1,4 +1,5 @@
 #include "StatusWidget.h"
+#include "CPU.h"
 
 StatusWidget::StatusWidget(CPU6502* cpu)
 {

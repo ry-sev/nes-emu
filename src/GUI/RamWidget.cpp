@@ -1,4 +1,5 @@
 #include "RamWidget.h"
+#include "Bus.h"
 #include <sstream>
 
 RamWidget::RamWidget(Bus* bus)

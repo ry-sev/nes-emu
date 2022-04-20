@@ -1,11 +1,10 @@
 #pragma once
 #include <vector>
-#include "Widget.h"
-#include "Bus.h"
-#include "CPU.h"
 
 struct GLFWwindow;
 class Widget;
+class Bus;
+class CPU6502;
 
 class WindowManager
 {

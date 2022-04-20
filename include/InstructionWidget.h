@@ -1,8 +1,8 @@
 #pragma once
-#include "Widget.h"
-#include "CPU.h"
 
-class CPU6502;
+#include "CPU.h"
+#include "Widget.h"
+#include <map>
 
 class InstructionWidget : public Widget {
 
