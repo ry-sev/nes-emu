@@ -8,7 +8,7 @@ class InstructionWidget : public Widget {
 
 public:
     InstructionWidget(CPU6502* cpu);
-    InstructionWidget() = default;
+    ~InstructionWidget() = default;
     void render() override;
 
 private:
