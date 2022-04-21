@@ -3,6 +3,8 @@
 #include "RamWidget.h"
 #include "StatusWidget.h"
 #include "InstructionWidget.h"
+#include "ScreenWidget.h"
+#include "NES.h"
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -18,10 +20,9 @@ static void glfw_error_callback(int error, const char* description)
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
-WindowManager::WindowManager(Bus* bus, CPU6502* cpu)
+WindowManager::WindowManager(NES* nes)
 {
-    m_bus = bus;
-    m_cpu = cpu;
+    m_nes = nes;
 }
 
 WindowManager::~WindowManager()
@@ -70,9 +71,10 @@ void WindowManager::init()
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     add_widget(new MenuWidget());
-    add_widget(new RamWidget(m_bus));
-    add_widget(new StatusWidget(m_cpu));
-    add_widget(new InstructionWidget(m_cpu));
+    add_widget(new ScreenWidget());
+    add_widget(new RamWidget(m_nes->bus()));
+    add_widget(new StatusWidget(m_nes->cpu()));
+    add_widget(new InstructionWidget(m_nes));
 }
 
 void WindowManager::run()
