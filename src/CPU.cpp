@@ -1305,12 +1305,12 @@ void CPU6502::NMI()
 
 u8 CPU6502::read(u16 address)
 {
-    return m_bus->read(address);
+    return m_bus->cpu_read(address);
 }
 
 void CPU6502::write(u16 address, u8 value)
 {
-    m_bus->write(address, value);
+    m_bus->cpu_write(address, value);
 }
 
 void CPU6502::clock()

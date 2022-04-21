@@ -58,10 +58,10 @@ public:
         void (CPU6502::*instruction)(void) = nullptr;
     };
     
-    const Registers& registers() { return m_registers; }
+    const Registers& registers() const { return m_registers; }
     void connect_to_bus(Bus* bus) { m_bus = bus; };
     std::map<u16, InstructionStrings> disassemble(u16 start_address, u16 end_address);
-    u8 cycles() const { return m_cycles; }
+    const u16& cycles() const { return m_cycles; }
     
     void reset();
     u8 get_flag(Flags flag);
@@ -79,7 +79,7 @@ private:
     u16 m_current_address;
     u16 m_offset;
     u8 m_current_value;
-    u8 m_cycles;
+    u16 m_cycles;
     bool m_page_boundary_crossed;
 
     void set_flag(Flags flag, bool value);
