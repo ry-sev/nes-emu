@@ -41,17 +41,24 @@ include_directories(${OPENGL_INCLUDE_DIRS})
 
 include_directories(${IMGUI_DIR})
 include_directories(include)
+include_directories(include/GUI)
 include_directories(src)
 
 set(SOURCE
+    ${SRC_DIR}/NES.cpp
     ${SRC_DIR}/Bus.cpp
     ${SRC_DIR}/CPU.cpp
+    ${SRC_DIR}/PPU.cpp
+    ${SRC_DIR}/Cartridge.cpp
+    ${SRC_DIR}/Mappers/Mapper.cpp
+    ${SRC_DIR}/Mappers/Mapper_000.cpp
     ${SRC_DIR}/GUI/WindowManager.cpp
     ${SRC_DIR}/GUI/Widget.cpp
     ${SRC_DIR}/GUI/RamWidget.cpp
     ${SRC_DIR}/GUI/StatusWidget.cpp
     ${SRC_DIR}/GUI/MenuWidget.cpp
     ${SRC_DIR}/GUI/InstructionWidget.cpp
+    ${SRC_DIR}/GUI/ScreenWidget.cpp
     ${SRC_DIR}/main.cpp
 )
 
