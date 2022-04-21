@@ -7,7 +7,7 @@
 int main() 
 {
     auto nes = NES();
-    auto cartridge = Cartridge("/home/rysev/Git/nes-emu/tests/nestest.nes");
+    auto cartridge = Cartridge("../tests/nestest.nes");
 
     if (!cartridge.is_valid()) {
         dbgln("Invalid cartridge");
