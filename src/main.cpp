@@ -1,20 +1,23 @@
 #include "Bus.h"
 #include "CPU.h"
+#include "NES.h"
+#include "Cartridge.h"
 #include "WindowManager.h"
 
 int main() 
 {
-    auto bus = Bus();
-    auto cpu = CPU6502();
+    auto nes = NES();
+    auto cartridge = Cartridge("/home/rysev/Git/nes-emu/tests/nestest.nes");
 
-    bus.connect_to_cpu(&cpu);
-    cpu.connect_to_bus(&bus);
+    if (!cartridge.is_valid()) {
+        dbgln("Invalid cartridge");
+        return 1;
+    }
 
-    bus.load_program_from_string("A2 0A 8E 00 00 A2 03 8E 01 00 AC 00 00 A9 00 18 6D 01 00 88 D0 FA 8D 02 00 EA EA EA");
+    nes.insert_cartridge(&cartridge);
+    nes.reset();
 
-    cpu.reset();
-
-    auto wm = WindowManager(&bus, &cpu);
+    auto wm = WindowManager(&nes);
     wm.init();
     wm.run();
     
