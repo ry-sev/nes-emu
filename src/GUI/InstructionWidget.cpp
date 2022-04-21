@@ -1,9 +1,10 @@
 #include "InstructionWidget.h"
+#include "NES.h"
 
-InstructionWidget::InstructionWidget(CPU6502* cpu)
+InstructionWidget::InstructionWidget(NES* nes)
 {
-    m_cpu = cpu;
-    m_disassembly = m_cpu->disassemble(0x0000, 0xFFFF);
+    m_nes = nes;
+    m_disassembly = m_nes->cpu()->disassemble(0x0000, 0xFFFF);
 }
 
 void InstructionWidget::render()
@@ -17,19 +18,19 @@ void InstructionWidget::render()
     }
 
     if (ImGui::Button("Run")) {
-        while (!(m_cpu->registers().a == 0x1e))
-            m_cpu->clock();
+        while (m_nes->cpu()->cycles() < 10000)
+            m_nes->clock();
     }
 
     ImGui::SameLine();
 
     if (ImGui::Button("Step"))
-        m_cpu->clock();
+        m_nes->clock();
     
     ImGui::SameLine();
     
     if (ImGui::Button("Reset"))
-        m_cpu->reset();
+        m_nes->reset();
 
     ImGui::Dummy(ImVec2(0.0f, 1.0f));
 
@@ -47,7 +48,7 @@ void InstructionWidget::render()
         ImGui::TableSetupColumn("Mode");
         ImGui::TableHeadersRow();
 
-        auto pc = m_cpu->registers().pc;
+        auto pc = m_nes->cpu()->registers().pc;
         bool on_pc;
         auto it = m_disassembly.find(pc);
         auto prev = std::prev(it);
