@@ -23,10 +23,10 @@ void RamWidget::render()
         ImGuiTableFlags_Borders |
         ImGuiTableFlags_RowBg |
         ImGuiTableFlags_SizingFixedFit |
-        ImGuiTableFlags_SizingStretchProp;
+        ImGuiTableFlags_SizingStretchProp |
+        ImGuiTableFlags_ScrollY;
 
-    create_table("ram_table_1", 0x0000, 4);
-    create_table("ram_table_2", 0x8000, 16);
+    create_table("ram_table_2", 0x8000, 32);
     
     end();
 }
@@ -55,7 +55,7 @@ void RamWidget::create_table(const char* table_name, u16 address, u32 rows)
             std::stringstream ascii_stream;
 
             for (size_t i = 0; i < 16; i++) {
-                auto value = hex(m_bus->read(address), 2);
+                auto value = hex(m_bus->cpu_read(address), 2);
                 hex_stream << " " << value;
                 ascii_stream << "" << hex_to_ascii(value);
                 address++;
