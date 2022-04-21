@@ -1,8 +1,10 @@
 #pragma once
 
-#define RAM_SIZE 0xFFFF
+#define CPU_RAM_SIZE 0x2048
 
+class Cartridge;
 class CPU6502;
+class PPU;
 
 class Bus {
 
@@ -10,13 +12,16 @@ public:
     Bus();
     ~Bus() = default;
 
-    u8 ram[RAM_SIZE];
+    u8 cpu_ram[CPU_RAM_SIZE];
 
-    void connect_to_cpu(CPU6502* cpu) { m_cpu = cpu; };
     void load_program_from_string(const char* program);
-    u8 read(u16 address);
-    void write(u16 address, u8 value);
+    u8 cpu_read(u16 address);
+    void cpu_write(u16 address, u8 value);
+
+    void insert_cartridge(Cartridge* cartridge);
 
 private:
+    Cartridge* m_cartridge;
     CPU6502* m_cpu;
+    PPU* m_ppu; 
 };
