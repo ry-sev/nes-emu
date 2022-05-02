@@ -10,12 +10,12 @@ void ScreenWidget::render()
     if (!m_show)
         return;
 
-    if (!begin("Screen")) {
-        end();
-        return;
-    }
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    begin("Screen");
 
-    m_draw_list = ImGui::GetWindowDrawList();
+    m_viewport_width = ImGui::GetContentRegionAvail().x;
+    m_viewport_height = ImGui::GetContentRegionAvail().y;
 
     end();
+    ImGui::PopStyleVar();
 }

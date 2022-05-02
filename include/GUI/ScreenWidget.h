@@ -11,5 +11,6 @@ public:
     void render() override;
 
 private:
-    ImDrawList* m_draw_list;
+    u32 m_viewport_width = 0;
+    u32 m_viewport_height = 0;
 };
