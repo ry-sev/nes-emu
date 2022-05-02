@@ -26,7 +26,7 @@ void RamWidget::render()
         ImGuiTableFlags_SizingStretchProp |
         ImGuiTableFlags_ScrollY;
 
-    create_table("ram_table_2", 0x8000, 32);
+    create_table("ram_table_2", 0x8000, 128);
     
     end();
 }
@@ -49,7 +49,7 @@ void RamWidget::create_table(const char* table_name, u16 address, u32 rows)
             auto offset = hex(address, 4);
 
             ImGui::TableSetColumnIndex(0);
-            ImGui::TextUnformatted(offset.c_str());
+            ImGui::Selectable(offset.c_str(), false, ImGuiSelectableFlags_SpanAllColumns);
 
             std::stringstream hex_stream;
             std::stringstream ascii_stream;
