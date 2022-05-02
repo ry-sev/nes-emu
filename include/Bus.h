@@ -1,4 +1,5 @@
 #pragma once
+#include <array>
 
 #define CPU_RAM_SIZE 0x2048
 
@@ -12,7 +13,7 @@ public:
     Bus();
     ~Bus() = default;
 
-    u8 cpu_ram[CPU_RAM_SIZE];
+    std::array<uint8_t, CPU_RAM_SIZE> cpu_ram;
 
     void load_program_from_string(const char* program);
     u8 cpu_read(u16 address);

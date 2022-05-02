@@ -6,7 +6,7 @@
 
 Bus::Bus()
 {
-    memset(cpu_ram, 0x0000, CPU_RAM_SIZE);
+    cpu_ram.fill(0x00);
 }
 
 void Bus::load_program_from_string(const char* program)
