@@ -12,8 +12,6 @@ void RamWidget::render()
     if (!m_show)
         return;
 
-    //m_window_flags |= ImGuiWindowFlags_NoResize;
-
     if (!begin("RAM Dump")) {
         end();
         return;
@@ -33,8 +31,6 @@ void RamWidget::render()
 
 void RamWidget::create_table(const char* table_name, u16 address, u32 rows)
 {
-    // TODO: Highlight rows on hover
-    
     if (ImGui::BeginTable(table_name, 3, m_flags)) {
 
         ImGui::TableSetupScrollFreeze(1, 1);
@@ -49,7 +45,7 @@ void RamWidget::create_table(const char* table_name, u16 address, u32 rows)
             auto offset = hex(address, 4);
 
             ImGui::TableSetColumnIndex(0);
-            ImGui::Selectable(offset.c_str(), false, ImGuiSelectableFlags_SpanAllColumns);
+            ImGui::TextUnformatted(offset.c_str());
 
             std::stringstream hex_stream;
             std::stringstream ascii_stream;
