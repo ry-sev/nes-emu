@@ -15,7 +15,6 @@ bool Mapper_000::cpu_map_read(u16 address, u32 &mapped_address)
     return false;
 }
 
-
 bool Mapper_000::cpu_map_write(u16 address, u32 &mapped_address)
 {
     if (address >= 0x8000 && address <= 0xFFFF) {
@@ -25,7 +24,6 @@ bool Mapper_000::cpu_map_write(u16 address, u32 &mapped_address)
     return false;
 }
 
-
 bool Mapper_000::ppu_map_read(u16 address, u32 &mapped_address)
 {
     if (address >= 0x0000 && address <= 0x1FFF) {
@@ -34,7 +32,6 @@ bool Mapper_000::ppu_map_read(u16 address, u32 &mapped_address)
     }
     return false;
 }
-
 
 bool Mapper_000::ppu_map_write(u16 address, u32 &mapped_address)
 {
