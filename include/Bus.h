@@ -19,6 +19,7 @@ public:
     u8 cpu_read(u16 address);
     void cpu_write(u16 address, u8 value);
 
+    void connect_to_ppu(PPU* ppu) { m_ppu = ppu; };
     void insert_cartridge(Cartridge* cartridge);
 
 private:
