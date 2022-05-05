@@ -1,16 +1,16 @@
 #pragma once
 
-union Status {
+union PPUSTATUS {
     struct {
         u8 unused : 5;
         u8 sprite_overflow : 1;
         u8 sprite_zero_hit : 1;
         u8 vertical_blank : 1;
     };
-    u8 reg;
+    u8 byte;
 };
 
-union Mask {
+union PPUMASK {
     struct {
         u8 greyscale : 1;
         u8 show_background_left : 1;
@@ -21,10 +21,10 @@ union Mask {
         u8 emphasize_green : 1;
         u8 emphasize_blue : 1;
     };
-    u8 reg;
+    u8 byte;
 };
 
-union Control {
+union PPUCTRL {
     struct {
         u8 nametable_x : 1;
         u8 nametable_y : 1;
@@ -35,10 +35,10 @@ union Control {
         u8 slave_mode : 1;
         u8 enable_nmi : 1;
     };
-    u8 reg;
+    u8 byte;
 };
 
-union LoopyRegister {
+union LOOPY {
     struct {
         u16 coarse_x : 5;
         u16 coarse_y : 5;
@@ -47,14 +47,15 @@ union LoopyRegister {
         u16 fine_y : 3;
         u16 unused : 1;
     };
-    u16 reg;
+    u16 byte;
 };
 
-struct MemoryMap {
-    u8 nametable[2][1024];
-	u8 pattern_table[2][4096];
-	u8 pallete_table[32];
-    u32 pallete[0x40];
+struct PPURegisters {
+    PPUSTATUS status;
+    PPUMASK mask;
+    PPUCTRL control;
+    LOOPY vram_address;
+    LOOPY tram_address;
 };
 
 class Cartridge;
@@ -80,13 +81,14 @@ private:
     Cartridge* m_cartridge;
     u16 m_cycles = 0;
 
-    MemoryMap m_memory_map;
+    struct MemoryMap {
+        u8 nametable[2][1024];
+    	u8 pattern_table[2][4096];
+    	u8 pallete_table[32];
+        u32 pallete[0x40];
+    } m_memory_map;
 
-    Status m_ppu_status;
-    Mask m_ppu_mask;
-    Control m_ppu_control;
-    LoopyRegister m_vram_address;
-    LoopyRegister m_tram_address;
+    PPURegisters m_registers;
 
     u8 m_address_latch = 0x00;
     u8 m_ppu_data_buffer = 0x00;

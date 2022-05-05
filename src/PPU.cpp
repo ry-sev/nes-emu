@@ -98,9 +98,9 @@ u8 PPU::cpu_read(u16 address)
         case 0x0001: // mask
             break;
         case 0x0002: // status
-            m_ppu_status.vertical_blank = 1; // temp
-            data = (m_ppu_status.reg & 0xE0) | (m_ppu_data_buffer & 0x1F);
-            m_ppu_status.vertical_blank = 0;
+            m_registers.status.vertical_blank = 1; // temp
+            data = (m_registers.status.byte & 0xE0) | (m_ppu_data_buffer & 0x1F);
+            m_registers.status.vertical_blank = 0;
             m_address_latch = 0;
             break;
         case 0x0003: // OAM address
@@ -125,10 +125,10 @@ void PPU::cpu_write(u16 address, u8 value)
 {
     switch (address) {
         case 0x0000: // control
-            m_ppu_control.reg = value;
+            m_registers.control.byte = value;
             break;
         case 0x0001: // mask
-            m_ppu_mask.reg = value;
+            m_registers.mask.byte = value;
             break;
         case 0x0002: // status
             break;
