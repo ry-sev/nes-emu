@@ -1,7 +1,5 @@
 #pragma once
 
-class Cartridge;
-
 union Status {
     struct {
         u8 unused : 5;
@@ -51,6 +49,8 @@ union LoopyRegister {
     };
     u16 reg;
 };
+
+class Cartridge;
 
 class PPU {
 

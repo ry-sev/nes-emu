@@ -92,8 +92,6 @@ int PPU::color_from_pallete(u8 pallete, u8 pixel)
 u8 PPU::cpu_read(u16 address)
 {
     u8 data = 0x00;
-    m_ppu_mask.greyscale = 0x00;
-
     switch (address) {
         case 0x0000: // control
             break;
@@ -120,7 +118,6 @@ u8 PPU::cpu_read(u16 address)
             break;
         default: break;
     }
-
     return data;
 }
 
@@ -168,7 +165,7 @@ u8 PPU::ppu_read(u16 address)
     if (m_cartridge->ppu_read(address, data)) {
 
     }
-    else if (address >= 0x0000 && address <= 0x1FFF) {
+    else if (address <= 0x1FFF) {
         data = m_pattern_table[(address & 0x1000) >> 12][address & 0x0FFF];
     }
     else if (address >= 0x2000 && address <= 0x3EFF) {
@@ -192,7 +189,7 @@ void PPU::ppu_write(u16 address, u8 value)
     if (m_cartridge->ppu_write(address, value)) {
 
     }
-    else if (address >= 0x0000 && address <= 0x1FFF) {
+    else if (address <= 0x1FFF) {
          m_pattern_table[(address & 0x1000) >> 12][address & 0x0FFF] = value;
     }
     else if (address >= 0x2000 && address <= 0x3EFF) {
