@@ -50,6 +50,13 @@ union LoopyRegister {
     u16 reg;
 };
 
+struct MemoryMap {
+    u8 nametable[2][1024];
+	u8 pattern_table[2][4096];
+	u8 pallete_table[32];
+    u32 pallete[0x40];
+};
+
 class Cartridge;
 
 class PPU {
@@ -73,10 +80,7 @@ private:
     Cartridge* m_cartridge;
     u16 m_cycles = 0;
 
-	u8 m_nametable[2][1024];
-	u8 m_pattern_table[2][4096];
-	u8 m_pallete_table[32];
-    u32 m_pallete[0x40];
+    MemoryMap m_memory_map;
 
     Status m_ppu_status;
     Mask m_ppu_mask;
