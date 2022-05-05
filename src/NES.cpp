@@ -8,6 +8,7 @@ NES::NES()
     m_ppu = PPU();
 
     m_cpu.connect_to_bus(&m_bus);
+    m_bus.connect_to_ppu(&m_ppu);
 }
 
 void NES::insert_cartridge(Cartridge* cartridge)
