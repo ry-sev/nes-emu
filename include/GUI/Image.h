@@ -1,5 +1,8 @@
 #pragma once
 
+#define HOVER true
+#define NO_HOVER false
+
 enum class ImageFormat {
     NONE = 0,
     RGB  = 3,
@@ -9,7 +12,7 @@ enum class ImageFormat {
 class Image {
 
 public:
-    Image(u32 width, u32 height);
+    Image(u32 width, u32 height, bool hover = NO_HOVER);
     ~Image();
 
     void render();
@@ -31,6 +34,7 @@ private:
     float m_texture_width;
     float m_texture_height;
     ImageFormat m_format = ImageFormat::NONE;
+    bool m_hover;
 
     u8* m_data = nullptr;
 };

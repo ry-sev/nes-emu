@@ -9,8 +9,9 @@
 #endif
 #include <GLFW/glfw3.h>
 
-Image::Image(u32 width, u32 height)
+Image::Image(u32 width, u32 height, bool hover)
 {
+    m_hover = hover;
     m_width = width;
     m_height = height;
     m_texture_width = static_cast<float>(width);
@@ -42,7 +43,44 @@ Image::~Image()
 
 void Image::render()
 {
+    auto mouse_position = ImGui::GetCursorScreenPos();
     ImGui::Image((void*)(intptr_t)m_texture, ImVec2(m_texture_width, m_texture_height));
+        
+    if (ImGui::IsItemHovered() && m_hover) {
+
+        auto io = ImGui::GetIO();
+        ImGui::BeginTooltip();
+
+        auto region_sz = 32.0f;
+        auto region_x = io.MousePos.x - mouse_position.x - region_sz * 0.5f;
+        auto region_y = io.MousePos.y - mouse_position.y - region_sz * 0.5f;
+        auto zoom = 4.0f;
+        
+        if (region_x < 0.0f)
+            region_x = 0.0f;
+        else if (region_x > m_texture_width - region_sz)
+            region_x = m_texture_width - region_sz;
+        
+        if (region_y < 0.0f)
+            region_y = 0.0f;
+        else if (region_y > m_texture_height - region_sz)
+            region_y = m_texture_height - region_sz;
+        
+        auto uv0 = ImVec2((region_x) / m_texture_width, (region_y) / m_texture_height);
+        auto uv1 = ImVec2(
+            (region_x + region_sz) / m_texture_width,
+            (region_y + region_sz) / m_texture_height
+        );
+        
+        ImGui::Image(
+            (void*)(intptr_t)m_texture,
+            ImVec2(region_sz * zoom, region_sz * zoom),
+            uv0,
+            uv1
+        );
+        
+        ImGui::EndTooltip();
+    }
 }
 
 void Image::update()

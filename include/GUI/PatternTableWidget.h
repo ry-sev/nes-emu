@@ -20,7 +20,7 @@ private:
     std::shared_ptr<PPU> m_ppu;
     u8 m_table_id;
     u8 m_palette_id;
-    Image m_pattern_table = Image(128, 128);
+    Image m_pattern_table = Image(128, 128, HOVER);
     std::string m_window_name;
 
     void update_pattern_table();
