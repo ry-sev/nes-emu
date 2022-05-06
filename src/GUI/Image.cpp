@@ -51,12 +51,21 @@ void Image::update()
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, GL_BGRA, GL_UNSIGNED_BYTE, (void*)m_data);
 }
 
+void Image::array_to_image(const u32* array)
+{
+    memcpy(
+        reinterpret_cast<void*>(m_data),
+        reinterpret_cast<const void*>(array),
+        m_width * m_height * sizeof(u32)
+    );
+}
+
 void Image::set_pixel(u32 x, u32 y, u32 color)
 {
     if (x >= m_width || y >= m_height)
         return;
 
-    u32* data = reinterpret_cast<u32*>(m_data);
+    auto data = reinterpret_cast<u32*>(m_data);
     const u32 position = (y * m_width) + x;
     data[position] = color;
 }

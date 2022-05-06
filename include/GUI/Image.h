@@ -16,6 +16,7 @@ public:
     void update();
     void scale_width(float width);
     void scale_height(float height);
+    void array_to_image(const u32* array);
     void set_pixel(u32 x, u32 y, u32 color);
     float width() const { return m_texture_width; }
     float height() const { return m_texture_height; }
