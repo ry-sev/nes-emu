@@ -3,23 +3,25 @@
 #include "NES.h"
 #include "Cartridge.h"
 #include "WindowManager.h"
+#include <memory>
 
 int main() 
 {
-    auto nes = NES();
-    auto cartridge = Cartridge("../tests/nestest.nes");
+    auto nes = std::make_shared<NES>();
 
-    if (!cartridge.is_valid()) {
+    auto cartridge = std::make_shared<Cartridge>("../tests/nestest.nes");
+
+    if (!cartridge->is_valid()) {
         dbgln("Invalid cartridge");
         return 1;
     }
 
-    nes.insert_cartridge(&cartridge);
-    nes.reset();
+    nes->insert_cartridge(cartridge);
+    nes->reset();
 
-    auto wm = WindowManager(&nes);
+    auto wm = WindowManager(nes);
     wm.init();
     wm.run();
-    
+
     return 0;
 }

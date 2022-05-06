@@ -1,79 +1,13 @@
 #include "PPU.h"
 #include "Cartridge.h"
+#include <cassert>
 
 PPU::PPU()
 {
-    // https://www.nesdev.org/wiki/PPU_palettes
-	m_memory_map.palette[0x00] = 0x545454;
-	m_memory_map.palette[0x01] = 0x001E74;
-	m_memory_map.palette[0x02] = 0x081090;
-	m_memory_map.palette[0x03] = 0x30008A;
-	m_memory_map.palette[0x04] = 0x440064;
-	m_memory_map.palette[0x05] = 0x5C0030;
-	m_memory_map.palette[0x06] = 0x540400;
-	m_memory_map.palette[0x07] = 0x3C1800;
-	m_memory_map.palette[0x08] = 0x202A00;
-	m_memory_map.palette[0x09] = 0x083A00;
-	m_memory_map.palette[0x0A] = 0x004000;
-	m_memory_map.palette[0x0B] = 0x003C00;
-	m_memory_map.palette[0x0C] = 0x00323C;
-	m_memory_map.palette[0x0D] = 0x000000;
-	m_memory_map.palette[0x0E] = 0x000000;
-	m_memory_map.palette[0x0F] = 0x000000;
 
-	m_memory_map.palette[0x10] = 0x989698;
-	m_memory_map.palette[0x11] = 0x084CC4;
-	m_memory_map.palette[0x12] = 0x3032EC;
-	m_memory_map.palette[0x13] = 0x5C1EE4;
-	m_memory_map.palette[0x14] = 0x8814B0;
-	m_memory_map.palette[0x15] = 0xA01464;
-	m_memory_map.palette[0x16] = 0x982220;
-	m_memory_map.palette[0x17] = 0x783C00;
-	m_memory_map.palette[0x18] = 0x545A00;
-	m_memory_map.palette[0x19] = 0x287200;
-	m_memory_map.palette[0x1A] = 0x087C00;
-	m_memory_map.palette[0x1B] = 0x007628;
-	m_memory_map.palette[0x1C] = 0x006678;
-	m_memory_map.palette[0x1D] = 0x000000;
-	m_memory_map.palette[0x1E] = 0x000000;
-	m_memory_map.palette[0x1F] = 0x000000;
-
-	m_memory_map.palette[0x20] = 0xECEEEC;
-	m_memory_map.palette[0x21] = 0x4C9AEC;
-	m_memory_map.palette[0x22] = 0x787CEC;
-	m_memory_map.palette[0x23] = 0xB062EC;
-	m_memory_map.palette[0x24] = 0xE454EC;
-	m_memory_map.palette[0x25] = 0xEC58B4;
-	m_memory_map.palette[0x26] = 0xEC6A64;
-	m_memory_map.palette[0x27] = 0xD48820;
-	m_memory_map.palette[0x28] = 0xA0AA00;
-	m_memory_map.palette[0x29] = 0x74C400;
-	m_memory_map.palette[0x2A] = 0x4CD020;
-	m_memory_map.palette[0x2B] = 0x38CC6C;
-	m_memory_map.palette[0x2C] = 0x38B4CC;
-	m_memory_map.palette[0x2D] = 0x3C3C3C;
-	m_memory_map.palette[0x2E] = 0x000000;
-	m_memory_map.palette[0x2F] = 0x000000;
-
-	m_memory_map.palette[0x30] = 0xECEEEC;
-	m_memory_map.palette[0x31] = 0xA8CCEC;
-	m_memory_map.palette[0x32] = 0xBCBCEC;
-	m_memory_map.palette[0x33] = 0xD4B2EC;
-	m_memory_map.palette[0x34] = 0xECAEEC;
-	m_memory_map.palette[0x35] = 0xECAED4;
-	m_memory_map.palette[0x36] = 0xECB4B0;
-	m_memory_map.palette[0x37] = 0xE4C490;
-	m_memory_map.palette[0x38] = 0xCCD278;
-	m_memory_map.palette[0x39] = 0xB4DE78;
-	m_memory_map.palette[0x3A] = 0xA8E290;
-	m_memory_map.palette[0x3B] = 0x98E2B4;
-	m_memory_map.palette[0x3C] = 0xA0D6E4;
-	m_memory_map.palette[0x3D] = 0xA0A2A0;
-	m_memory_map.palette[0x3E] = 0x000000;
-	m_memory_map.palette[0x3F] = 0x000000;
 }
 
-void PPU::insert_cartridge(Cartridge* cartridge)
+void PPU::insert_cartridge(std::shared_ptr<Cartridge> cartridge)
 {
     m_cartridge = cartridge;
 }
@@ -85,6 +19,7 @@ void PPU::clock()
 
 u32 PPU::color_from_palette(u8 palette, u8 pixel)
 {
+    assert(palette == 0 || palette == 1);
     auto value = ppu_read(0x3F00 + (palette << 2) + pixel) & 0x3F;
     return m_memory_map.palette[value];
 }

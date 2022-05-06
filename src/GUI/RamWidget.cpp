@@ -2,7 +2,7 @@
 #include "Bus.h"
 #include <sstream>
 
-RamWidget::RamWidget(Bus* bus)
+RamWidget::RamWidget(const std::shared_ptr<Bus> bus)
 {
     m_bus = bus;
 }

@@ -1,7 +1,7 @@
 #include "InstructionWidget.h"
 #include "NES.h"
 
-InstructionWidget::InstructionWidget(NES* nes)
+InstructionWidget::InstructionWidget(std::shared_ptr<NES> nes)
 {
     m_nes = nes;
     m_disassembly = m_nes->cpu()->disassemble(0x0000, 0xFFFF);

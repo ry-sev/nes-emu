@@ -39,7 +39,7 @@ public:
 
 private:
     Mirror m_mirror;
-    Mapper* m_mapper;
+    Mapper* m_mapper = nullptr;
     iNESHeader m_header;
     u8 m_program_banks;
     u8 m_character_banks;

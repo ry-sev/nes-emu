@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <map>
+#include <memory>
 
 enum AddressingModes {
     Absolute,
@@ -59,7 +60,7 @@ public:
     };
     
     const Registers& registers() const { return m_registers; }
-    void connect_to_bus(Bus* bus) { m_bus = bus; };
+    void connect_to_bus(std::shared_ptr<Bus> bus) { m_bus = bus; };
     std::map<u16, InstructionStrings> disassemble(u16 start_address, u16 end_address);
     const u16& cycles() const { return m_cycles; }
     
@@ -71,7 +72,7 @@ public:
 
 private:
 
-    Bus* m_bus;
+    std::shared_ptr<Bus> m_bus;
     Registers m_registers;
     AddressingModes m_addressing_mode;
     std::vector<Instruction> m_lookup_table;

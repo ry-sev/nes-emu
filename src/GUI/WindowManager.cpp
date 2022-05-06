@@ -21,7 +21,7 @@ static void glfw_error_callback(int error, const char* description)
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
-WindowManager::WindowManager(NES* nes)
+WindowManager::WindowManager(std::shared_ptr<NES> nes)
 {
     m_nes = nes;
 }
@@ -49,7 +49,7 @@ void WindowManager::init()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
     // create window with graphics context    
-    m_window = glfwCreateWindow(1280, 720, "NES Emulator", NULL, NULL);
+    m_window = glfwCreateWindow(1320, 720, "NES Emulator", NULL, NULL);
     if (m_window == NULL) {
         std::cerr << "GLFW window could not be created\n";
         return;

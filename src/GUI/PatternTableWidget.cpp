@@ -3,7 +3,7 @@
 #include "Image.h"
 #include <sstream>
 
-PatternTableWidget::PatternTableWidget(PPU* ppu, u8 table_id)
+PatternTableWidget::PatternTableWidget(std::shared_ptr<PPU> ppu, u8 table_id)
 {
     m_ppu = ppu;
     m_table_id = table_id;
@@ -55,12 +55,13 @@ void PatternTableWidget::update_pattern_table()
 
             for (u16 row = 0; row < 8; row++) {
 
-                u8 tile_low_byte = m_ppu->ppu_read(m_table_id * 0x1000 + offset + row + 0x0000);
-                u8 tile_high_byte = m_ppu->ppu_read(m_table_id * 0x1000 + offset + row + 0x0008);
+                auto tile_low_byte = m_ppu->ppu_read(m_table_id * 0x1000 + offset + row + 0x0000);
+                auto tile_high_byte = m_ppu->ppu_read(m_table_id * 0x1000 + offset + row + 0x0008);
 
                 for (u16 column = 0; column < 8; column++) {
 
-                    u8 pixel = (tile_low_byte & 0x01) + (tile_high_byte & 0x01);
+                    //auto pixel = (tile_low_byte & 0x01) + (tile_high_byte & 0x01);
+                    auto pixel = (tile_high_byte & 0x01) << 1 | (tile_low_byte & 0x01);
 
                     tile_low_byte >>= 1;
                     tile_high_byte >>= 1;

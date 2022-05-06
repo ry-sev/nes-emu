@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 
 union PPUSTATUS {
     struct {
@@ -71,21 +72,33 @@ public:
     u8 ppu_read(u16 address);
     void ppu_write(u16 address, u8 value);
 
-    void insert_cartridge(Cartridge* cartridge);
+    void insert_cartridge(std::shared_ptr<Cartridge> cartridge);
     void clock();
     const u16& cycles() const { return m_cycles; }
 
     u32 color_from_palette(u8 palette, u8 pixel);
 
 private:
-    Cartridge* m_cartridge;
+    std::shared_ptr<Cartridge> m_cartridge;
     u16 m_cycles = 0;
 
     struct MemoryMap {
         u8 nametable[2][1024];
     	u8 pattern_table[2][4096];
-    	u8 palette_table[32];
-        u32 palette[0x40];
+    	u8 palette_table[0x40];
+        const u32 palette[0x40] = {
+            0xFF545454, 0xFF001E74, 0xFF081090, 0xFF300088, 0xFF440064, 0xFF5C0030,
+            0xFF540400, 0xFF3C1800, 0xFF202A00, 0xFF083A00, 0xFF004000, 0xFF003C00,
+            0xFF00323C, 0xFF000000, 0xFF000000, 0xFF000000, 0xFF989698, 0xFF084CC4,
+            0xFF3032EC, 0xFF5C1EE4, 0xFF8814B0, 0xFFA01464, 0xFF982220, 0xFF783C00,
+            0xFF545A00, 0xFF287200, 0xFF087C00, 0xFF007628, 0xFF006678, 0xFF000000,
+            0xFF000000, 0xFF000000, 0xFFECEEEC, 0xFF4C9AEC, 0xFF787CEC, 0xFFB062EC,
+            0xFFE454EC, 0xFFEC58B4, 0xFFEC6A64, 0xFFD48820, 0xFFA0AA00, 0xFF74C400,
+            0xFF4CD020, 0xFF38CC6C, 0xFF38B4CC, 0xFF3C3C3C, 0xFF000000, 0xFF000000,
+            0xFFECEEEC, 0xFFA8CCEC, 0xFFBCBCEC, 0xFFD4B2EC, 0xFFECAEEC, 0xFFECAED4,
+            0xFFECD4AE, 0xFFE4C490, 0xFFCCD278, 0xFFB4DE78, 0xFFA8E290, 0xFF98E2B4,
+            0xFFA0D6E4, 0xFFA0A2A0, 0xFF000000, 0xFF000000
+        };
     } m_memory_map;
 
     PPURegisters m_registers;

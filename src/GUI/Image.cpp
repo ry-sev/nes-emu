@@ -15,7 +15,7 @@ Image::Image(u32 width, u32 height)
     m_height = height;
     m_texture_width = static_cast<float>(width);
     m_texture_height = static_cast<float>(height);
-    m_format = ImageFormat::RGB;
+    m_format = ImageFormat::RGBA;
 
     auto size = m_width * m_height * bytes_per_channel(m_format);
     m_data = new u8[size];
@@ -28,7 +28,7 @@ Image::Image(u32 width, u32 height)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, (void*)m_data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_width, m_height, 0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)m_data);
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -48,7 +48,7 @@ void Image::render()
 void Image::update()
 {
     glBindTexture(GL_TEXTURE_2D, m_texture);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, GL_RGB, GL_UNSIGNED_BYTE, (void*)m_data);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, GL_BGRA, GL_UNSIGNED_BYTE, (void*)m_data);
 }
 
 void Image::set_pixel(u32 x, u32 y, u32 color)

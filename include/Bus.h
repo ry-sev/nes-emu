@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include <memory>
 
 #define CPU_RAM_SIZE 0x2048
 
@@ -19,11 +20,11 @@ public:
     u8 cpu_read(u16 address);
     void cpu_write(u16 address, u8 value);
 
-    void connect_to_ppu(PPU* ppu) { m_ppu = ppu; };
-    void insert_cartridge(Cartridge* cartridge);
+    void connect_to_ppu(std::shared_ptr<PPU> ppu) { m_ppu = ppu; };
+    void insert_cartridge(std::shared_ptr<Cartridge> cartridge);
 
 private:
-    Cartridge* m_cartridge;
-    CPU6502* m_cpu;
-    PPU* m_ppu; 
+    std::shared_ptr<Cartridge> m_cartridge;
+    std::shared_ptr<CPU6502> m_cpu;
+    std::shared_ptr<PPU> m_ppu; 
 };

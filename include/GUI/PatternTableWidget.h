@@ -1,13 +1,14 @@
 #pragma once
 #include "Widget.h"
 #include "Image.h"
+#include <memory>
 
 class PPU;
 
 class PatternTableWidget : public Widget {
 
 public:
-    PatternTableWidget(PPU* ppu, u8 table_id);
+    PatternTableWidget(std::shared_ptr<PPU> ppu, u8 table_id);
     ~PatternTableWidget() = default;
     
     void render() override;
@@ -16,7 +17,7 @@ public:
     void set_palette_id(u8 id) { m_palette_id = id; }
 
 private:
-    PPU* m_ppu;
+    std::shared_ptr<PPU> m_ppu;
     u8 m_table_id;
     u8 m_palette_id;
     Image m_pattern_table = Image(128, 128);

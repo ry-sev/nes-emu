@@ -1,7 +1,7 @@
 #include "StatusWidget.h"
 #include "CPU.h"
 
-StatusWidget::StatusWidget(CPU6502* cpu)
+StatusWidget::StatusWidget(const std::shared_ptr<CPU6502> cpu)
 {
     m_cpu = cpu;
 }

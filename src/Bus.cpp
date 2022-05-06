@@ -52,7 +52,7 @@ void Bus::cpu_write(u16 address, u8 value)
         m_ppu->cpu_write(address & 0x0007, value);
 }
 
-void Bus::insert_cartridge(Cartridge* cartridge)
+void Bus::insert_cartridge(std::shared_ptr<Cartridge> cartridge)
 {
     m_cartridge = cartridge;
 }

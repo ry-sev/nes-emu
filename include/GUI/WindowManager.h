@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <memory>
 
 struct GLFWwindow;
 class Widget;
@@ -9,7 +10,7 @@ class WindowManager
 {
 
 public:
-    WindowManager(NES* nes);
+    WindowManager(std::shared_ptr<NES> nes);
     ~WindowManager();
 
     void init();
@@ -24,5 +25,5 @@ private:
     GLFWwindow* m_window = nullptr;
     std::vector<Widget*> m_widgets;
     bool m_running = false;
-    NES* m_nes;
+    std::shared_ptr<NES> m_nes;
 };
