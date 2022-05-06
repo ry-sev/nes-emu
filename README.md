@@ -4,9 +4,9 @@
 
 This is an ongoing project where I attempt to emulate a Nintendo Entertainment System (NES). This idea is not new but I figured it would be really fun develop, slowly but surely.
 
-## Screenshot
+## Video
 
-![Emulator](screenshot.png)
+https://user-images.githubusercontent.com/38510174/167217902-a81a35d3-b9fc-4eaf-87e7-7bd252f36d60.mp4
 
 ## Supported Platforms
 
