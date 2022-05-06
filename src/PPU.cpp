@@ -83,7 +83,7 @@ void PPU::clock()
     m_cycles++;
 }
 
-int PPU::color_from_pallete(u8 pallete, u8 pixel)
+u32 PPU::color_from_pallete(u8 pallete, u8 pixel)
 {
     auto value = ppu_read(0x3F00 + (pallete << 2) + pixel) & 0x3F;
     return m_memory_map.pallete[value];
@@ -115,6 +115,7 @@ u8 PPU::cpu_read(u16 address)
             data = m_ppu_data_buffer;
             m_ppu_data_buffer = ppu_read(m_ppu_address);
             if (m_ppu_address > 0x3F00) data = m_ppu_data_buffer;
+            m_ppu_address++;
             break;
         default: break;
     }
@@ -139,17 +140,18 @@ void PPU::cpu_write(u16 address, u8 value)
         case 0x0005: // scroll
             break;
         case 0x0006: // PPU address
-            if (m_address_latch == 0) {
+            if (m_address_latch == 0x00) {
                 m_ppu_address = (m_ppu_address & 0x00FF) | (value << 8);
-                m_address_latch = 1;
+                m_address_latch = 0x01;
             }
             else {
                 m_ppu_address = (m_ppu_address & 0xFF00) | value;
-                m_address_latch = 0;
+                m_address_latch = 0x00;
             }
             break;
         case 0x0007: // PPU data
-            
+            ppu_write(m_ppu_address, value);
+            m_ppu_address++;
             break;
         default: break;
     }

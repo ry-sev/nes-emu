@@ -75,7 +75,7 @@ public:
     void clock();
     const u16& cycles() const { return m_cycles; }
 
-    int color_from_pallete(u8 pallete, u8 pixel);
+    u32 color_from_pallete(u8 pallete, u8 pixel);
 
 private:
     Cartridge* m_cartridge;
