@@ -75,7 +75,7 @@ public:
     void clock();
     const u16& cycles() const { return m_cycles; }
 
-    u32 color_from_pallete(u8 pallete, u8 pixel);
+    u32 color_from_palette(u8 palette, u8 pixel);
 
 private:
     Cartridge* m_cartridge;
@@ -84,8 +84,8 @@ private:
     struct MemoryMap {
         u8 nametable[2][1024];
     	u8 pattern_table[2][4096];
-    	u8 pallete_table[32];
-        u32 pallete[0x40];
+    	u8 palette_table[32];
+        u32 palette[0x40];
     } m_memory_map;
 
     PPURegisters m_registers;

@@ -7,7 +7,7 @@ PatternTableWidget::PatternTableWidget(PPU* ppu, u8 table_id)
 {
     m_ppu = ppu;
     m_table_id = table_id;
-    m_pallete_id = 0x00;
+    m_palette_id = 0x00;
 
     std::stringstream fmt;
     fmt << "PPU Pattern Table " << std::to_string(m_table_id);
@@ -68,7 +68,7 @@ void PatternTableWidget::update_pattern_table()
                     m_pattern_table.set_pixel(
                         tile_x * 8 + (7 - column),
                         tile_y * 8 + row,
-                        m_ppu->color_from_pallete(m_pallete_id, pixel)
+                        m_ppu->color_from_palette(m_palette_id, pixel)
                     );
                 }
             }
