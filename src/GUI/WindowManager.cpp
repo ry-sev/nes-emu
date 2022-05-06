@@ -4,6 +4,7 @@
 #include "StatusWidget.h"
 #include "InstructionWidget.h"
 #include "ScreenWidget.h"
+#include "PatternTableWidget.h"
 #include "NES.h"
 
 #include "imgui.h"
@@ -75,6 +76,8 @@ void WindowManager::init()
     add_widget(new RamWidget(m_nes->bus()));
     add_widget(new StatusWidget(m_nes->cpu()));
     add_widget(new InstructionWidget(m_nes));
+    add_widget(new PatternTableWidget(m_nes->ppu(), 0x00));
+    add_widget(new PatternTableWidget(m_nes->ppu(), 0x01));
 }
 
 void WindowManager::run()
