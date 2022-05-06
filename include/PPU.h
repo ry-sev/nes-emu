@@ -1,6 +1,9 @@
 #pragma once
 #include <memory>
 
+#define SCREEN_WIDTH 256
+#define SCREEN_HEIGHT 240
+
 union PPUSTATUS {
     struct {
         u8 unused : 5;
@@ -65,7 +68,7 @@ class PPU {
 
 public:
     PPU();
-    ~PPU() = default;
+    ~PPU();
 
     u8 cpu_read(u16 address);
     void cpu_write(u16 address, u8 value);
@@ -74,13 +77,18 @@ public:
 
     void insert_cartridge(std::shared_ptr<Cartridge> cartridge);
     void clock();
-    const u16& cycles() const { return m_cycles; }
+    u16 cycles() const { return m_cycles; }
+    const u32* screen() const { return m_screen; }
+    bool frame_is_complete() { return m_frame_complete; }
 
     u32 color_from_palette(u8 palette, u8 pixel);
 
 private:
     std::shared_ptr<Cartridge> m_cartridge;
     u16 m_cycles = 0;
+    u16 m_scan_line = 0;
+    bool m_frame_complete = false;
+    u32* m_screen = nullptr;
 
     struct MemoryMap {
         u8 nametable[2][1024];

@@ -4,7 +4,12 @@
 
 PPU::PPU()
 {
+    m_screen = new u32[SCREEN_WIDTH * SCREEN_HEIGHT];
+}
 
+PPU::~PPU()
+{
+    delete[] m_screen;
 }
 
 void PPU::insert_cartridge(std::shared_ptr<Cartridge> cartridge)
@@ -14,7 +19,29 @@ void PPU::insert_cartridge(std::shared_ptr<Cartridge> cartridge)
 
 void PPU::clock()
 {
+
+    const u32 x = static_cast<u32>(m_cycles - 1);
+    const u32 y = static_cast<u32>(m_scan_line);
+
+    if (x < SCREEN_WIDTH && y < SCREEN_HEIGHT) {
+        //auto max = 0xFFFFFFFF;
+        //auto min = 0x000000FF;
+        auto min = 0;
+        auto max = 1;
+        auto random = rand()%(max - min + 1) + min;
+        auto color = (random == 1) ? 0xFFFFFFFF : 0x000000FF;
+        m_screen[(y * SCREEN_WIDTH) + x] = color;
+    }
+
     m_cycles++;
+    if (m_cycles >= 341) {
+        m_cycles = 0;
+        m_scan_line++;
+        if (m_scan_line > 261) {
+            m_scan_line = -1;
+            m_frame_complete = true;
+        }
+    }
 }
 
 u32 PPU::color_from_palette(u8 palette, u8 pixel)
