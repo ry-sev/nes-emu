@@ -1,16 +1,23 @@
 #pragma once
 #include "Widget.h"
+#include "Image.h"
+#include <memory>
+
+#define SCREEN_WIDTH 256
+#define SCREEN_HEIGHT 240
+
+class PPU;
 
 class ScreenWidget : public Widget
 {
 
 public:
-    ScreenWidget();
+    ScreenWidget(std::shared_ptr<PPU> ppu);
     ~ScreenWidget() = default;
 
     void render() override;
 
 private:
-    u32 m_viewport_width = 0;
-    u32 m_viewport_height = 0;
+    std::shared_ptr<PPU> m_ppu;
+    Image m_screen = Image(SCREEN_WIDTH, SCREEN_HEIGHT);
 };
