@@ -49,7 +49,7 @@ void WindowManager::init()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
     // create window with graphics context    
-    m_window = glfwCreateWindow(1320, 720, "NES Emulator", NULL, NULL);
+    m_window = glfwCreateWindow(990, 720, "NES Emulator", NULL, NULL);
     if (m_window == NULL) {
         std::cerr << "GLFW window could not be created\n";
         return;
@@ -72,7 +72,7 @@ void WindowManager::init()
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     add_widget(new MenuWidget());
-    add_widget(new ScreenWidget());
+    add_widget(new ScreenWidget(m_nes->ppu()));
     add_widget(new RamWidget(m_nes->bus()));
     add_widget(new StatusWidget(m_nes->cpu()));
     add_widget(new InstructionWidget(m_nes));
