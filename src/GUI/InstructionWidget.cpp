@@ -17,16 +17,25 @@ void InstructionWidget::render()
         return;
     }
 
-    if (ImGui::Button("Run")) {
-        while (m_nes->cpu()->cycles() < 10000)
-            m_nes->clock();
+    const char* button_label_1 = m_paused ? "Resume" : "Pause";
+
+    if (ImGui::Button(button_label_1)) {
+        if (m_paused)
+            m_paused = false;
+        else
+            m_paused = true;
     }
+
+    if (!m_paused)
+        m_nes->clock();
 
     ImGui::SameLine();
 
-    if (ImGui::Button("Step"))
-        m_nes->clock();
-    
+    if (m_paused) {
+        if (ImGui::Button("Step"))
+            m_nes->clock();
+    }
+
     ImGui::SameLine();
     
     if (ImGui::Button("Reset"))

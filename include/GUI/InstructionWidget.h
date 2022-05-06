@@ -17,4 +17,5 @@ private:
     NES* m_nes;
     ImGuiTableFlags m_flags;
     std::map<u16, InstructionStrings> m_disassembly;
+    bool m_paused = false;
 };
