@@ -9,7 +9,7 @@ int main()
 {
     auto nes = std::make_shared<NES>();
 
-    auto cartridge = std::make_shared<Cartridge>("../tests/nestest.nes");
+    auto cartridge = std::make_shared<Cartridge>("../tests/ntsc_torture.nes");
 
     if (!cartridge->is_valid()) {
         dbgln("Invalid cartridge");
