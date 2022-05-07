@@ -5,4 +5,7 @@
 build/
 
 # imgui
-imgui.ini
+#imgui.ini
+
+tests/*
+!nestest.nes
