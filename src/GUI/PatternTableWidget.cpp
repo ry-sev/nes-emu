@@ -60,7 +60,6 @@ void PatternTableWidget::update_pattern_table()
 
                 for (u16 column = 0; column < 8; column++) {
 
-                    //auto pixel = (tile_low_byte & 0x01) + (tile_high_byte & 0x01);
                     auto pixel = (tile_high_byte & 0x01) << 1 | (tile_low_byte & 0x01);
 
                     tile_low_byte >>= 1;
