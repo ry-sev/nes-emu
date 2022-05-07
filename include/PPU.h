@@ -77,6 +77,7 @@ public:
 
     void insert_cartridge(std::shared_ptr<Cartridge> cartridge);
     void clock();
+    void new_frame() { m_frame_complete = false; };
     u16 cycles() const { return m_cycles; }
     const u32* screen() const { return m_screen; }
     bool frame_is_complete() { return m_frame_complete; }

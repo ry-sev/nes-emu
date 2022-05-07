@@ -26,8 +26,12 @@ void InstructionWidget::render()
             m_paused = true;
     }
 
-    if (!m_paused)
-        m_nes->clock();
+    if (!m_paused) {
+        do {
+            m_nes->clock();
+        } while (!m_nes->ppu()->frame_is_complete());
+        m_nes->ppu()->new_frame();
+    }
 
     ImGui::SameLine();
 
