@@ -51,7 +51,7 @@ union LOOPY {
         u16 fine_y : 3;
         u16 unused : 1;
     };
-    u16 byte;
+    u16 byte = 0x0000;
 };
 
 struct PPURegisters {
@@ -87,6 +87,16 @@ public:
     u32 color_from_palette(u8 palette, u8 pixel);
 
 private:
+
+    void increment_scroll_x();
+    void increment_scroll_y();
+    void transfer_address_x();
+    void transfer_address_y();
+    void load_background_shifters();
+    void update_shifters();
+    std::pair<u8, u8> current_pixel_to_render();
+
+
     std::shared_ptr<Cartridge> m_cartridge;
     i16 m_cycles = 0;
     i16 m_scan_line = 0;
@@ -113,9 +123,21 @@ private:
         };
     } m_memory_map;
 
+    struct Background {
+        u8 next_tile_id = 0x00;
+        u8 next_tile_attribute = 0x00;
+        u8 next_tile_low_byte = 0x00;
+        u8 next_tile_high_byte = 0x00;
+        u16 shifter_pattern_low_byte = 0x0000;
+        u16 shifter_pattern_high_byte = 0x0000;
+        u16 shifter_attribute_low_byte = 0x0000;
+        u16 shifter_attribute_high_byte = 0x0000;
+    } m_background;
+
     PPURegisters m_registers;
 
     u8 m_address_latch = 0x00;
     u8 m_ppu_data_buffer = 0x00;
+    u8 m_fine_x = 0x00;
     u16 m_ppu_address = 0x0000;
 };
