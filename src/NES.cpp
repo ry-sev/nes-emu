@@ -29,5 +29,10 @@ void NES::clock()
     if (m_system_clock_count % 3 == 0)
         m_cpu->clock();
 
+    if (m_ppu->nmi()) {
+        m_ppu->set_nmi(false);
+        m_cpu->nmi();
+    }
+
     m_system_clock_count++;
 }

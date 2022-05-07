@@ -19,13 +19,19 @@ void PPU::insert_cartridge(std::shared_ptr<Cartridge> cartridge)
 
 void PPU::clock()
 {
+    if (m_scan_line == -1 && m_cycles == 1)
+        m_registers.status.vertical_blank = 0;
 
-    const u32 x = static_cast<u32>(m_cycles - 1);
-    const u32 y = static_cast<u32>(m_scan_line);
+    if (m_scan_line == 241 && m_cycles == 1) {
+        m_registers.status.vertical_blank = 1;
+        if (m_registers.control.enable_nmi)
+            m_nmi = true;
+    }
 
-    if (x < SCREEN_WIDTH && y < SCREEN_HEIGHT) {
-        //auto max = 0xFFFFFFFF;
-        //auto min = 0x000000FF;
+    const auto x = static_cast<i32>(m_cycles - 1);
+    const auto y = static_cast<i32>(m_scan_line);
+
+    if (x >= 0 && x < SCREEN_WIDTH && y >= 0 && y < SCREEN_HEIGHT) {
         auto min = 0;
         auto max = 1;
         auto random = rand()%(max - min + 1) + min;
@@ -60,7 +66,6 @@ u8 PPU::cpu_read(u16 address)
         case 0x0001: // mask
             break;
         case 0x0002: // status
-            m_registers.status.vertical_blank = 1; // temp
             data = (m_registers.status.byte & 0xE0) | (m_ppu_data_buffer & 0x1F);
             m_registers.status.vertical_blank = 0;
             m_address_latch = 0;

@@ -81,14 +81,17 @@ public:
     u16 cycles() const { return m_cycles; }
     const u32* screen() const { return m_screen; }
     bool frame_is_complete() { return m_frame_complete; }
+    bool nmi() { return m_nmi; }
+    void set_nmi(bool value) { m_nmi = value; }
 
     u32 color_from_palette(u8 palette, u8 pixel);
 
 private:
     std::shared_ptr<Cartridge> m_cartridge;
-    u16 m_cycles = 0;
-    u16 m_scan_line = 0;
+    i16 m_cycles = 0;
+    i16 m_scan_line = 0;
     bool m_frame_complete = false;
+    bool m_nmi = false;
     u32* m_screen = nullptr;
 
     struct MemoryMap {

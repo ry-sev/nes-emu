@@ -1259,7 +1259,7 @@ void CPU6502::XXX()
     return;
 }
 
-void CPU6502::IRQ()
+void CPU6502::irq()
 {
     if (get_flag(I) == 0) {
         write(0x0100 + m_registers.s, (m_registers.pc >> 8) & 0x00FF);
@@ -1282,7 +1282,7 @@ void CPU6502::IRQ()
     }
 }
 
-void CPU6502::NMI()
+void CPU6502::nmi()
 {
         write(0x0100 + m_registers.s, (m_registers.pc >> 8) & 0x00FF);
         m_registers.s--;
@@ -1324,7 +1324,7 @@ std::map<u16, InstructionStrings> CPU6502::disassemble(u16 start_address, u16 en
 {
     std::map<u16, InstructionStrings> instruction_map;
 
-    u16 current_address = start_address;
+    auto current_address = static_cast<u32>(start_address);
     
     u8 value = 0x00;
     u8 low_byte = 0x00;
@@ -1334,9 +1334,9 @@ std::map<u16, InstructionStrings> CPU6502::disassemble(u16 start_address, u16 en
     std::string instruction;
     std::string mode_str;
 
-    while (current_address < end_address) {
+    while (current_address <= static_cast<u32>(end_address)) {
 
-        u16 id = current_address;
+        auto id = current_address;
         address = hex(current_address, 4);
         u8 opcode = read(current_address++);
 
@@ -1388,11 +1388,11 @@ std::map<u16, InstructionStrings> CPU6502::disassemble(u16 start_address, u16 en
             low_byte = read(current_address++);
             high_byte = 0x00;
             instruction += "($" + hex(low_byte, 2) + ", Y)";
-            mode_str= "mode";
+            mode_str= "INY";
         }
         else if (mode == &CPU6502::AM_REL) {
             value = read(current_address++);
-            instruction += "$" + hex(value, 2) + " [$" + hex(current_address + (int8_t)value, 4) + "]";
+            instruction += "$" + hex(value, 2) + " [$" + hex(current_address + (i8)value, 4) + "]";
             mode_str = "REL";
         }
         else if (mode ==  &CPU6502::AM_ZER) {

@@ -69,6 +69,8 @@ public:
     u8 read(u16 address);
     void write(u16 address, u8 value);
     void clock();
+    void irq();
+    void nmi();
 
 private:
 
@@ -156,7 +158,4 @@ private:
     void TXS();
     void TYA();
     void XXX();
-
-    void IRQ();
-    void NMI();
 };
