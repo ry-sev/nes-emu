@@ -30,6 +30,8 @@ void InstructionWidget::render()
         do {
             m_nes->clock();
         } while (!m_nes->ppu()->frame_is_complete());
+        //} while (m_nes->cpu()->cycles() < 14579);
+        //m_paused = true;
         m_nes->ppu()->new_frame();
     }
 
@@ -54,9 +56,10 @@ void InstructionWidget::render()
         ImGuiTableFlags_SizingStretchProp | 
         ImGuiTableFlags_ScrollY;
 
-    if (ImGui::BeginTable("instructions", 3, m_flags)) {
+    if (ImGui::BeginTable("instructions", 4, m_flags)) {
         ImGui::TableSetupScrollFreeze(1, 1);
         ImGui::TableSetupColumn("Address");
+        ImGui::TableSetupColumn("Opcodes");
         ImGui::TableSetupColumn("Instruction");
         ImGui::TableSetupColumn("Mode");
         ImGui::TableHeadersRow();
@@ -72,7 +75,7 @@ void InstructionWidget::render()
         // with the program counter in the middle
 
         if (prev != m_disassembly.end()) {
-            for (size_t row = 0; row < 12; row++) {
+            for (size_t row = 0; row < 4; row++) {
                 if (prev != m_disassembly.end()) {
                     first_13[prev->first] = prev->second;
                     prev = std::prev(prev);
@@ -86,12 +89,14 @@ void InstructionWidget::render()
             on_pc = hex(pc, 4) == it->second.address.c_str();
             ImGui::Selectable(it->second.address.c_str(), on_pc, ImGuiSelectableFlags_SpanAllColumns);
             ImGui::TableSetColumnIndex(1);
-            ImGui::TextUnformatted(it->second.instruction.c_str());
+            ImGui::TextUnformatted(it->second.opcodes.c_str());
             ImGui::TableSetColumnIndex(2);
+            ImGui::TextUnformatted(it->second.instruction.c_str());
+            ImGui::TableSetColumnIndex(3);
             ImGui::TextUnformatted(it->second.mode.c_str());
         }
 
-        size_t limit = 26 - first_13.size();
+        size_t limit = 10 - first_13.size();
 
         it = m_disassembly.find(pc);
         if (it != m_disassembly.end()) {
@@ -102,8 +107,10 @@ void InstructionWidget::render()
                     on_pc = hex(pc, 4) == it->second.address.c_str();
                     ImGui::Selectable(it->second.address.c_str(), on_pc, ImGuiSelectableFlags_SpanAllColumns);
                     ImGui::TableSetColumnIndex(1);
-                    ImGui::TextUnformatted(it->second.instruction.c_str());
+                    ImGui::TextUnformatted(it->second.opcodes.c_str());
                     ImGui::TableSetColumnIndex(2);
+                    ImGui::TextUnformatted(it->second.instruction.c_str());
+                    ImGui::TableSetColumnIndex(3);
                     ImGui::TextUnformatted(it->second.mode.c_str());
                 }
             }

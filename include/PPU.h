@@ -75,16 +75,19 @@ public:
     u8 ppu_read(u16 address);
     void ppu_write(u16 address, u8 value);
 
-    void insert_cartridge(std::shared_ptr<Cartridge> cartridge);
+    void insert_cartridge(const std::shared_ptr<Cartridge> cartridge);
     void clock();
+    void reset();
     void new_frame() { m_frame_complete = false; };
     u16 cycles() const { return m_cycles; }
-    const u32* screen() const { return m_screen; }
+    const i32* screen() const { return m_screen; }
     bool frame_is_complete() { return m_frame_complete; }
     bool nmi() { return m_nmi; }
     void set_nmi(bool value) { m_nmi = value; }
 
-    u32 color_from_palette(u8 palette, u8 pixel);
+    i32 color_from_palette(u8 palette, u8 pixel);
+
+    u8* oam_ptr = (u8*)m_oam;
 
 private:
 
@@ -102,7 +105,7 @@ private:
     i16 m_scan_line = 0;
     bool m_frame_complete = false;
     bool m_nmi = false;
-    u32* m_screen = nullptr;
+    i32* m_screen = nullptr;
 
     struct MemoryMap {
         u8 nametable[2][1024];
@@ -134,10 +137,29 @@ private:
         u16 shifter_attribute_high_byte = 0x0000;
     } m_background;
 
+    struct Foreground {
+        u8 sprite_shifter_pattern_low_byte[8];
+        u8 sprite_shifter_pattern_high_byte[8];
+    } m_foreground;
+
+    struct ObjectAttributeEntry {
+        u8 y_position;
+        u8 id;
+        u8 attribute;
+        u8 x_position;
+    } m_oam[64];
+
     PPURegisters m_registers;
 
     u8 m_address_latch = 0x00;
     u8 m_ppu_data_buffer = 0x00;
     u8 m_fine_x = 0x00;
     u16 m_ppu_address = 0x0000;
+    u8 m_oam_address = 0x00;
+
+    ObjectAttributeEntry m_sprite_scan_line[8];
+    u8 m_sprite_count;
+
+    bool m_sprite_zero_hit_possible = false;
+    bool m_sprite_zero_rendered = false;
 };

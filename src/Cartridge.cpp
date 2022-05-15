@@ -5,7 +5,7 @@
 Cartridge::Cartridge(const std::string& filename)
 {
     std::ifstream file;
-    file.open(filename, std::ios::binary);
+    file.open(filename, std::ifstream::binary);
 
     if (file.is_open()) 
     {
@@ -21,12 +21,22 @@ Cartridge::Cartridge(const std::string& filename)
         file.read((char*)m_program_memory.data(), m_program_memory.size());
 
         m_character_banks = m_header.chr_rom;
-        m_character_memory.resize(m_character_banks * 8192);
+
+        if (m_character_banks == 0)
+            m_character_memory.resize(8192);
+        else
+            m_character_memory.resize(m_character_banks * 8192);
+        
         file.read((char*)m_character_memory.data(), m_character_memory.size());
 
-        m_mapper = new Mapper_000(m_program_banks, m_character_banks);
+        switch (m_mapper_id) {
+            case 0:
+                m_mapper = new Mapper_000(m_program_banks, m_character_banks);
+                m_valid_file = true;
+                break;
+            default: break;
+        }
 
-        m_valid_file = true;
         file.close();
     }
 }

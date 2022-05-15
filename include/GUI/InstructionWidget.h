@@ -18,5 +18,5 @@ private:
     std::shared_ptr<NES> m_nes = nullptr;
     ImGuiTableFlags m_flags;
     std::map<u16, InstructionStrings> m_disassembly;
-    bool m_paused = true;
+    bool m_paused = false;
 };

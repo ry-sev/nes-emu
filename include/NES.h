@@ -13,7 +13,7 @@ public:
     NES();
     ~NES() = default;
 
-    void insert_cartridge(std::shared_ptr<Cartridge> cartridge);
+    void insert_cartridge(const std::shared_ptr<Cartridge> cartridge);
     void reset();
     void clock();
 
@@ -21,6 +21,8 @@ public:
     std::shared_ptr<Bus> bus() { return m_bus; }
     std::shared_ptr<PPU> ppu() { return m_ppu; }
     const u32& system_clock_count() const { return m_system_clock_count; }
+    void write_controller_state(u32 controller_id, u8 data);
+    void clear_controller_state(u32 controller_id);
 
 private:
     std::shared_ptr<CPU6502> m_cpu;

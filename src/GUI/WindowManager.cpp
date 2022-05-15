@@ -5,6 +5,7 @@
 #include "InstructionWidget.h"
 #include "ScreenWidget.h"
 #include "PatternTableWidget.h"
+#include "OAMWidget.h"
 #include "NES.h"
 
 #include "imgui.h"
@@ -49,7 +50,7 @@ void WindowManager::init()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
     // create window with graphics context    
-    m_window = glfwCreateWindow(990, 720, "NES Emulator", NULL, NULL);
+    m_window = glfwCreateWindow(1235, 750, "NES Emulator", NULL, NULL);
     if (m_window == NULL) {
         std::cerr << "GLFW window could not be created\n";
         return;
@@ -72,12 +73,13 @@ void WindowManager::init()
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     add_widget(new MenuWidget());
-    add_widget(new ScreenWidget(m_nes->ppu()));
-    add_widget(new RamWidget(m_nes->bus()));
+    //add_widget(new RamWidget(m_nes->bus()));
     add_widget(new StatusWidget(m_nes->cpu()));
     add_widget(new PatternTableWidget(m_nes->ppu(), 0x00));
     add_widget(new PatternTableWidget(m_nes->ppu(), 0x01));
+    add_widget(new OAMWidget(m_nes->ppu()));
     add_widget(new InstructionWidget(m_nes));
+    add_widget(new ScreenWidget(m_nes->ppu()));
 }
 
 void WindowManager::run()
@@ -89,6 +91,7 @@ void WindowManager::run()
     while (!glfwWindowShouldClose(m_window) && m_running) {
 
         glfwPollEvents();
+        handle_controller_input();
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -109,6 +112,38 @@ void WindowManager::run()
 
         glfwSwapBuffers(m_window);
     }
+}
+
+void WindowManager::handle_controller_input()
+{
+    if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(m_window, true);
+
+    m_nes->clear_controller_state(CONTROLLER_1);
+
+    if (glfwGetKey(m_window, GLFW_KEY_X) == GLFW_PRESS)
+        m_nes->write_controller_state(CONTROLLER_1, 0x80);
+
+    if (glfwGetKey(m_window, GLFW_KEY_Z) == GLFW_PRESS)
+        m_nes->write_controller_state(CONTROLLER_1, 0x40);
+
+    if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS)
+        m_nes->write_controller_state(CONTROLLER_1, 0x20);
+
+    if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS)
+        m_nes->write_controller_state(CONTROLLER_1, 0x10);
+
+    if (glfwGetKey(m_window, GLFW_KEY_UP) == GLFW_PRESS)
+        m_nes->write_controller_state(CONTROLLER_1, 0x08);
+
+    if (glfwGetKey(m_window, GLFW_KEY_DOWN) == GLFW_PRESS)
+        m_nes->write_controller_state(CONTROLLER_1, 0x04);
+
+    if (glfwGetKey(m_window, GLFW_KEY_LEFT) == GLFW_PRESS)
+        m_nes->write_controller_state(CONTROLLER_1, 0x02);
+
+    if (glfwGetKey(m_window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+        m_nes->write_controller_state(CONTROLLER_1, 0x01);
 }
 
 bool WindowManager::request_close()

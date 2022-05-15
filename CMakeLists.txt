@@ -60,6 +60,7 @@ set(SOURCE
     ${SRC_DIR}/GUI/ScreenWidget.cpp
     ${SRC_DIR}/GUI/PatternTableWidget.cpp
     ${SRC_DIR}/GUI/Image.cpp
+    ${SRC_DIR}/GUI/OAMWidget.cpp
     ${SRC_DIR}/main.cpp
 )
 

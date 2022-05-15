@@ -16,6 +16,7 @@ public:
     void init();
     void run();
     void destroy();
+    void handle_controller_input();
     bool request_close();
 
     Widget* add_widget(Widget* widget);

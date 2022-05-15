@@ -2,6 +2,9 @@
 
 #include "iostream"
 
+#define NUMBER_OF_CONTROLLERS 1
+#define CONTROLLER_1 0
+
 template<typename ...Args>
 inline void dbgln(Args && ...args)
 {
@@ -31,4 +34,12 @@ inline std::string hex_to_ascii(std::string hex)
         return ascii;
     }
     return ".";
+}
+
+inline u_int8_t flip_byte(u_int8_t byte)
+{
+    byte = (byte & 0xF0) >> 4 | (byte & 0x0F) << 4;
+    byte = (byte & 0xCC) >> 2 | (byte & 0x33) << 2;
+    byte = (byte & 0xAA) >> 1 | (byte & 0x55) << 1;
+    return byte;
 }

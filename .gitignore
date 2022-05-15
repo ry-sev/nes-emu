@@ -9,3 +9,5 @@ build/
 
 tests/*
 !nestest.nes
+
+nestest.log

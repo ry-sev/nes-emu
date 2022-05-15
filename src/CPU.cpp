@@ -1,6 +1,7 @@
 #include "CPU.h"
 #include "Bus.h"
 #include <iostream>
+#include <cstdio>
 
 CPU6502::CPU6502()
 {
@@ -159,7 +160,7 @@ CPU6502::CPU6502()
         {"???", &CPU6502::AM_IMP, &CPU6502::XXX},
         {"TYA", &CPU6502::AM_IMP, &CPU6502::TYA},
         {"STA", &CPU6502::AM_ABY, &CPU6502::STA},
-        {"TXS", &CPU6502::AM_IMM, &CPU6502::TXS},
+        {"TXS", &CPU6502::AM_IMP, &CPU6502::TXS},
         {"???", &CPU6502::AM_IMP, &CPU6502::XXX},
         {"???", &CPU6502::AM_IMP, &CPU6502::XXX},
         {"STA", &CPU6502::AM_ABX, &CPU6502::STA},
@@ -175,7 +176,7 @@ CPU6502::CPU6502()
         {"???", &CPU6502::AM_IMP, &CPU6502::XXX},
         {"TAY", &CPU6502::AM_IMP, &CPU6502::TAY},
         {"LDA", &CPU6502::AM_IMM, &CPU6502::LDA},
-        {"TAX", &CPU6502::AM_IMM, &CPU6502::TAX},
+        {"TAX", &CPU6502::AM_IMP, &CPU6502::TAX},
         {"???", &CPU6502::AM_IMP, &CPU6502::XXX},
         {"LDY", &CPU6502::AM_ABS, &CPU6502::LDY},
         {"LDA", &CPU6502::AM_ABS, &CPU6502::LDA},
@@ -191,7 +192,7 @@ CPU6502::CPU6502()
         {"???", &CPU6502::AM_IMP, &CPU6502::XXX},
         {"CLV", &CPU6502::AM_IMP, &CPU6502::CLV},
         {"LDA", &CPU6502::AM_ABY, &CPU6502::LDA},
-        {"TSX", &CPU6502::AM_IMM, &CPU6502::TSX},
+        {"TSX", &CPU6502::AM_IMP, &CPU6502::TSX},
         {"???", &CPU6502::AM_IMP, &CPU6502::XXX},
         {"LDY", &CPU6502::AM_ABX, &CPU6502::LDY},
         {"LDA", &CPU6502::AM_ABX, &CPU6502::LDA},
@@ -207,7 +208,7 @@ CPU6502::CPU6502()
         {"???", &CPU6502::AM_IMP, &CPU6502::XXX},
         {"INY", &CPU6502::AM_IMP, &CPU6502::INY},
         {"CMP", &CPU6502::AM_IMM, &CPU6502::CMP},
-        {"DEX", &CPU6502::AM_IMM, &CPU6502::DEX},
+        {"DEX", &CPU6502::AM_IMP, &CPU6502::DEX},
         {"???", &CPU6502::AM_IMP, &CPU6502::XXX},
         {"CPY", &CPU6502::AM_ABS, &CPU6502::CPY},
         {"CMP", &CPU6502::AM_ABS, &CPU6502::CMP},
@@ -272,16 +273,18 @@ void CPU6502::reset()
     u16 high_byte = read(m_current_address + 1);
 
     m_registers.pc = (high_byte << 8) | low_byte;
+    //m_registers.pc = 0xC000; // NESTEST
 
     set_flag(U, 1);
     m_registers.s = 0xFD;
-    m_registers.p = 0x00 | U;
+    //m_registers.p = 0x00 | U;
+    m_registers.p = 0x24;
 
     m_current_address = 0x0000;
     m_offset = 0x0000;
     m_current_value = 0x00;
 
-    m_cycles = 8;
+    m_cycles = 7;
 }
 
 u8 CPU6502::get_flag(Flags flag)
@@ -323,6 +326,7 @@ void CPU6502::AM_ABY()
     u16 low_byte = read(m_registers.pc++);
     u16 high_byte = read(m_registers.pc++);
     m_current_address = (high_byte << 8) | low_byte;
+    m_current_address += m_registers.y;
 
     if ((m_current_address & 0xFF00) != (high_byte << 8))
         m_page_boundary_crossed = true;
@@ -393,7 +397,6 @@ void CPU6502::AM_REL()
     m_offset = read(m_registers.pc++);
     if (m_offset & 0x80)
         m_offset |= 0xFF00;
-    m_current_address = m_registers.pc + m_offset;
 
     m_addressing_mode = Relative;
 }
@@ -424,11 +427,11 @@ void CPU6502::AM_ZEY()
 void CPU6502::ADC()
 {
     m_current_value = read(m_current_address);
-    auto value = m_registers.a + m_current_value + get_flag(C);
+    auto value = (u16)m_registers.a + (u16)m_current_value + (u16)get_flag(C);
 
     set_flag(C, value > 255);
     set_flag(Z, (value & 0x00FF) == 0x00);
-    set_flag(V, (~(m_registers.a ^ value) & (m_registers.a ^ value)) & 0x80);
+    set_flag(V, (~((u16)m_registers.a ^ (u16)m_current_value) & ((u16)m_registers.a ^ (u16)value)) & 0x0080);
     set_flag(N, value & 0x80);
 
     m_registers.a = value & 0x00FF;
@@ -479,7 +482,7 @@ void CPU6502::AND()
             m_cycles += 4;
             break;
         }
-        case Indirect_X: m_cycles++; break;
+        case Indirect_X: m_cycles += 6; break;
         case Indirect_Y: {
             if (m_page_boundary_crossed)
                 m_cycles++;
@@ -493,11 +496,16 @@ void CPU6502::AND()
 void CPU6502::ASL()
 {
     m_current_value = read(m_current_address);
-    auto value = m_current_value << 1;
+    auto value = (u16)m_current_value << 1;
 
     set_flag(Z, (value & 0x00FF) == 0x00);
     set_flag(C, (value & 0xFF00) > 0);
     set_flag(N, (value & 0x80));
+
+    if (m_addressing_mode == Accumalator)
+        m_registers.a = value & 0x00FF;
+    else
+        write(m_current_address, value & 0x00FF);
 
     switch(m_addressing_mode) {
         case Accumalator: m_cycles += 2; break;
@@ -551,9 +559,9 @@ void CPU6502::BEQ()
 void CPU6502::BIT()
 {
     m_current_value = read(m_current_address);
-    auto result = m_registers.a & m_current_address;
+    auto result = m_registers.a & m_current_value;
 
-    set_flag(Z, result == 0x00);
+    set_flag(Z, (result & 0x00FF) == 0x00);
     set_flag(V, m_current_value & (1 << 6));
     set_flag(N, m_current_value & (1 << 7));
 
@@ -620,7 +628,7 @@ void CPU6502::BRK()
     m_registers.s--;
     set_flag(B, 0);
 
-    m_registers.pc = read(0xFFFE) | (read(0xFFFF) << 8);
+    m_registers.pc = (u16)read(0xFFFE) | ((u16)read(0xFFFF) << 8);
 
     m_cycles += 7;
 }
@@ -678,10 +686,11 @@ void CPU6502::CLV()
 void CPU6502::CMP()
 {
     m_current_value = read(m_current_address);
+    auto value = (u16)m_registers.a - (u16)m_current_value;
 
     set_flag(C, m_registers.a >= m_current_value);
-    set_flag(Z, m_registers.a == m_current_value);
-    set_flag(N, m_current_value & 0x80);
+    set_flag(Z, (value & 0x00FF) == 0x0000);
+    set_flag(N, value & 0x80);
 
     switch (m_addressing_mode) {
         case Immediate: m_cycles += 2; break;
@@ -709,10 +718,11 @@ void CPU6502::CMP()
 void CPU6502::CPX()
 {
     m_current_value = read(m_current_address);
+    auto value = (u16)m_registers.x - (u16)m_current_value;
 
     set_flag(C, m_registers.x >= m_current_value);
-    set_flag(Z, m_registers.x == m_current_value);
-    set_flag(N, m_registers.x & 0x80);
+    set_flag(Z, (value & 0x00FF) == 0x0000);
+    set_flag(N, value & 0x0080);
 
     switch (m_addressing_mode) {
         case Immediate: m_cycles += 2; break;
@@ -725,10 +735,11 @@ void CPU6502::CPX()
 void CPU6502::CPY()
 {
     m_current_value = read(m_current_address);
+    auto value = (u16)m_registers.y - (u16)m_current_value;
 
     set_flag(C, m_registers.y >= m_current_value);
-    set_flag(Z, m_registers.y == m_current_value);
-    set_flag(N, m_registers.y & 0x80);
+    set_flag(Z, (value & 0x00FF) == 0x0000);
+    set_flag(N, value & 0x0080);
 
     switch (m_addressing_mode) {
         case Immediate: m_cycles += 2; break;
@@ -741,12 +752,12 @@ void CPU6502::CPY()
 void CPU6502::DEC()
 {
     m_current_value = read(m_current_address);
-    auto value = m_current_address - 0x01;
+    auto value = m_current_value - 0x01;
 
     write(m_current_address, value & 0x00FF);
 
-    set_flag(C, value == 0x00);
-    set_flag(N, value & 0x80);
+    set_flag(Z, (value & 0x00FF) == 0x0000);
+    set_flag(N, value & 0x0080);
 
     switch (m_addressing_mode) {
         case Zeropage: m_cycles += 5; break;
@@ -815,8 +826,16 @@ void CPU6502::INC()
 
     write(m_current_address, value & 0x00FF);
 
-    set_flag(Z, value == 0x00);
-    set_flag(N, value & 0x80);
+    set_flag(Z, (value & 0x00FF) == 0x0000);
+    set_flag(N, value & 0x0080);
+
+    switch (m_addressing_mode) {
+        case Zeropage: m_cycles += 5; break;
+        case Zeropage_X:
+        case Absolute: m_cycles += 6; break;
+        case Absolute_X: m_cycles += 7; break;
+        default: break;
+    }
 }
 
 void CPU6502::INX()
@@ -948,10 +967,10 @@ void CPU6502::LSR()
     auto value = m_current_value >> 1;
 
     set_flag(C, m_current_value & 0x0001);
-    set_flag(Z, (value & 0x00FF) == 0x00);
-    set_flag(N, (value & 0x80));
+    set_flag(Z, (value & 0x00FF) == 0x0000);
+    set_flag(N, (value & 0x0080));
 
-    if (m_addressing_mode == Implied)
+    if (m_addressing_mode == Accumalator)
         m_registers.a = value & 0x00FF;
     else
         write(m_current_address, value & 0x00FF);
@@ -1012,7 +1031,9 @@ void CPU6502::PHA()
 
 void CPU6502::PHP()
 {
-    write(0x0100 + m_registers.s, m_registers.p);
+    write(0x0100 + m_registers.s, m_registers.p | B | U);
+	set_flag(B, 0);
+	set_flag(U, 0);
     m_registers.s--;
     m_cycles += 3;
 }
@@ -1031,7 +1052,8 @@ void CPU6502::PLA()
 void CPU6502::PLP()
 {
     m_registers.s++;
-    m_registers.p = read(0x0100 + m_registers.s);
+    m_registers.p = ((read(0x100 + m_registers.s) & 0xef) | (0xab & 0x10)) | 0x20;
+    set_flag(U, 1);
 
     m_cycles += 4;
 }
@@ -1039,13 +1061,13 @@ void CPU6502::PLP()
 void CPU6502::ROL()
 {
     m_current_value = read(m_current_address);
-    auto value = (m_current_value << 1) | get_flag(C);
+    auto value = (u16)(m_current_value << 1) | get_flag(C);
 
     set_flag(C, value & 0xFF00);
-    set_flag(Z, (value & 0x00FF) == 0x00);
-    set_flag(N, value & 0x80);
+    set_flag(Z, (value & 0x00FF) == 0x0000);
+    set_flag(N, value & 0x0080);
 
-    if (m_addressing_mode == Implied)
+    if (m_addressing_mode == Accumalator)
         m_registers.a = value & 0x00FF;
     else
         write(m_current_address, value & 0x00FF);
@@ -1063,13 +1085,13 @@ void CPU6502::ROL()
 void CPU6502::ROR()
 {
     m_current_value = read(m_current_address);
-    auto value = (get_flag(C) << 7) | (m_current_value >> 1);
+    auto value = (u16)(get_flag(C) << 7) | (m_current_value >> 1);
 
-    set_flag(C, value & 0xFF00);
+    set_flag(C, m_current_value & 0x01);
     set_flag(Z, (value & 0x00FF) == 0x00);
-    set_flag(N, value & 0x80);
+    set_flag(N, value & 0x0080);
 
-    if (m_addressing_mode == Implied)
+    if (m_addressing_mode == Accumalator)
         m_registers.a = value & 0x00FF;
     else
         write(m_current_address, value & 0x00FF);
@@ -1093,10 +1115,10 @@ void CPU6502::RTI()
     m_registers.p &= ~U;
 
     m_registers.s++;
-    m_registers.pc = read(0x0100 + m_registers.s);
+    m_registers.pc = (u16)read(0x0100 + m_registers.s);
     m_registers.s++;
 
-    m_registers.pc |= read(0x0100 + m_registers.s) << 8;
+    m_registers.pc |= (u16)read(0x0100 + m_registers.s) << 8;
 
     m_cycles += 6;
 }
@@ -1104,9 +1126,9 @@ void CPU6502::RTI()
 void CPU6502::RTS()
 {
     m_registers.s++;
-    m_registers.pc = read(0x0100 + m_registers.s);
+    m_registers.pc = (u16)read(0x0100 + m_registers.s);
     m_registers.s++;
-    m_registers.pc |= read(0x0100 + m_registers.s) << 8;
+    m_registers.pc |= (u16)read(0x0100 + m_registers.s) << 8;
 
     m_registers.pc++;
 
@@ -1117,13 +1139,13 @@ void CPU6502::SBC()
 {
     m_current_value = read(m_current_address);
 
-    auto inverted_value = m_current_value ^ 0x00FF;
-    auto value = m_registers.a + inverted_value + get_flag(C);
+    auto inverted_value = (u16)m_current_value ^ 0x00FF;
+    auto value = (u16)m_registers.a + inverted_value + (u16)get_flag(C);
 
     set_flag(C, value & 0xFF00);
     set_flag(Z, (value & 0x00FF) == 0x00);
-    set_flag(V, (value ^ m_registers.a) & (value ^ inverted_value) & 0x80);
-    set_flag(N, value & 0x80);
+    set_flag(V, (value ^ (u16)m_registers.a) & (value ^ inverted_value) & 0x80);
+    set_flag(N, value & 0x0080);
 
     m_registers.a = value & 0x00FF;
 
@@ -1300,7 +1322,7 @@ void CPU6502::nmi()
         auto high_byte = read(m_current_address + 1);
         m_registers.pc = (high_byte << 8) | low_byte;
 
-        m_cycles = 7;
+        m_cycles = 8;
 }
 
 u8 CPU6502::read(u16 address)
@@ -1315,9 +1337,42 @@ void CPU6502::write(u16 address, u8 value)
 
 void CPU6502::clock()
 {
+    log_cpu();
+
+    set_flag(U, 1);
     auto opcode = read(m_registers.pc++);
     (this->*m_lookup_table[opcode].mode)();
     (this->*m_lookup_table[opcode].instruction)();
+    set_flag(U, 1);
+    m_page_boundary_crossed = false;
+}
+
+void CPU6502::log_cpu()
+{
+    freopen("nestest.log", "a", stdout);
+
+    auto instr = m_disassembly[m_registers.pc];
+
+    std::cout
+    << hex(m_registers.pc, 4)
+    << " "
+    << instr.opcodes
+    << " "
+    << instr.instruction
+    << " "
+    << "A:"
+    << hex(m_registers.a, 2)
+    << " X:"
+    << hex(m_registers.x, 2)
+    << " Y:"
+    << hex(m_registers.y, 2)
+    << " P:"
+    << hex(m_registers.p, 2)
+    << " SP:"
+    << hex(m_registers.s, 2)
+    << " CYC:"
+    << std::to_string(m_cycles)
+    << "\n";
 }
 
 std::map<u16, InstructionStrings> CPU6502::disassemble(u16 start_address, u16 end_address)
@@ -1325,95 +1380,103 @@ std::map<u16, InstructionStrings> CPU6502::disassemble(u16 start_address, u16 en
     std::map<u16, InstructionStrings> instruction_map;
 
     auto current_address = static_cast<u32>(start_address);
-    
-    u8 value = 0x00;
-    u8 low_byte = 0x00;
-    u8 high_byte = 0x00;
-
-    std::string address;
-    std::string instruction;
-    std::string mode_str;
 
     while (current_address <= static_cast<u32>(end_address)) {
 
+        u8 value = 0x00;
+        u8 low_byte = 0x00;
+        u8 high_byte = 0x00;
+
         auto id = current_address;
-        address = hex(current_address, 4);
+        std::string address = hex(current_address, 4);
+
         u8 opcode = read(current_address++);
 
-        // TODO: append opcodes not just instruction name
-
-        instruction = m_lookup_table[opcode].name + " ";
+        std::string mode_str = "";
+        std::string opcodes = hex(opcode, 2);
+        std::string instruction = m_lookup_table[opcode].name;
 
         auto mode = m_lookup_table[opcode].mode;
 
-        if (mode == &CPU6502::AM_ABS) {
+        if (mode == &CPU6502::AM_ACC) {
+            mode_str = "ACC";
+        }
+        else if (mode == &CPU6502::AM_ABS) {
             low_byte = read(current_address++);
             high_byte = read(current_address++);
-            instruction += "$" + hex((high_byte << 8) | low_byte, 4);
+            opcodes += " " + hex(low_byte, 2) + " " + hex(high_byte, 2);
+            instruction += " $" + hex((high_byte << 8) | low_byte, 4);
             mode_str = "ABS";
         }
         else if (mode == &CPU6502::AM_ABX) {
             low_byte = read(current_address++);
             high_byte = read(current_address++);
-            instruction += "$" + hex((high_byte << 8) | low_byte, 4) + ", X";
+            opcodes += " " + hex(low_byte, 2) + " " + hex(high_byte, 2);
+            instruction += " $" + hex((high_byte << 8) | low_byte, 4) + ",X";
             mode_str = "ABX";
         }
         else if (mode == &CPU6502::AM_ABY) {
             low_byte = read(current_address++);
             high_byte = read(current_address++);
-            instruction += "$" + hex((high_byte << 8) | low_byte, 4) + ", X";
+            opcodes += " " + hex(low_byte, 2) + " " + hex(high_byte, 2);
+            instruction += " $" + hex((high_byte << 8) | low_byte, 4) + ",Y";
             mode_str = "ABY";
         }
         else if (mode == &CPU6502::AM_IMM) {
             value = read(current_address++);
-            instruction += "#$" + hex(value, 2);
+            opcodes += " " + hex(value, 2);
+            instruction += " #$" + hex(value, 2);
             mode_str = "IMM";
         }
-        else if (mode ==  &CPU6502::AM_IMP) {
+        else if (mode == &CPU6502::AM_IMP) {
+            opcodes = hex(opcode, 2);
             mode_str = "IMP";
         }
         else if (mode == &CPU6502::AM_IND) {
             low_byte = read(current_address++);
             high_byte = read(current_address++);
-            instruction += "($" + hex((high_byte << 8) | low_byte, 4) + ")";
+            opcodes += " " + hex(low_byte, 2) + " " + hex(high_byte, 2);
+            instruction += " ($" + hex((high_byte << 8) | low_byte, 4) + ")";
             mode_str = "IND";
         }
         else if (mode == &CPU6502::AM_INX) {
             low_byte = read(current_address++);
-            high_byte = 0x00;
-            instruction += "($" + hex(low_byte, 2) + ", X)";
+            opcodes += " " + hex(low_byte, 2);
+            instruction += " ($" + hex(low_byte, 2) + ",X)";
             mode_str = "INX";
         }
         else if (mode == &CPU6502::AM_INY) {
             low_byte = read(current_address++);
-            high_byte = 0x00;
-            instruction += "($" + hex(low_byte, 2) + ", Y)";
+            opcodes += " " + hex(low_byte, 2);
+            instruction += " ($" + hex(low_byte, 2) + ",Y)";
             mode_str= "INY";
         }
         else if (mode == &CPU6502::AM_REL) {
             value = read(current_address++);
-            instruction += "$" + hex(value, 2) + " [$" + hex(current_address + (i8)value, 4) + "]";
+            opcodes = hex(opcode, 2)  + " " + hex(value, 2);
+            instruction += " $" + hex(current_address + (i8)value, 4);
             mode_str = "REL";
         }
-        else if (mode ==  &CPU6502::AM_ZER) {
+        else if (mode == &CPU6502::AM_ZER) {
             low_byte = read(current_address++);
-            high_byte = 0x00;
-            instruction += "$" + hex(low_byte, 2);
+            opcodes += " " + hex(low_byte, 2);
+            instruction += " $" + hex(low_byte, 2);
             mode_str = "ZER";
         }
-        else if (mode ==  &CPU6502::AM_ZEX) {
+        else if (mode == &CPU6502::AM_ZEX) {
             low_byte = read(current_address++);
-            high_byte = 0x00;
-            instruction += "$" + hex(low_byte, 2) + ", X";
+            //opcodes = hex(opcode, 2);
+            instruction += " $" + hex(low_byte, 2) + ",X";
             mode_str = "ZEX";
         }
-        else if (mode ==  &CPU6502::AM_ZEY) {
+        else if (mode == &CPU6502::AM_ZEY) {
             low_byte = read(current_address++);
-            high_byte = 0x00;
-            instruction += "$" + hex(low_byte, 2) + ", Y";
+            opcodes += " " + hex(low_byte, 2);
+            instruction += " $" + hex(low_byte, 2) + ",Y";
             mode_str = "ZEY";
         }
-        instruction_map[id] = {address, instruction, mode_str};
+        instruction_map[id] = {address, opcodes, instruction, mode_str};
     }
+    m_disassembly = instruction_map;
     return instruction_map;
 }

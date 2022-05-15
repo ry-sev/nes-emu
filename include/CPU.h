@@ -41,6 +41,7 @@ struct Registers {
 
 struct InstructionStrings {
     std::string address;
+    std::string opcodes;
     std::string instruction;
     std::string mode;
 };
@@ -63,6 +64,8 @@ public:
     void connect_to_bus(std::shared_ptr<Bus> bus) { m_bus = bus; };
     std::map<u16, InstructionStrings> disassemble(u16 start_address, u16 end_address);
     const u16& cycles() const { return m_cycles; }
+
+    void log_cpu();
     
     void reset();
     u8 get_flag(Flags flag);
@@ -84,6 +87,8 @@ private:
     u8 m_current_value;
     u16 m_cycles;
     bool m_page_boundary_crossed;
+
+    std::map<u16,InstructionStrings> m_disassembly;
 
     void set_flag(Flags flag, bool value);
 
