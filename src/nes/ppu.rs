@@ -771,7 +771,7 @@ impl Addressable for Ppu {
 	}
 
 	fn read(&mut self, address: u16) -> u8 {
-		let mut data: u8 = 0;
+		let mut data: u8;
 
 		match address & 0x0007 {
 			0x0002 => {
